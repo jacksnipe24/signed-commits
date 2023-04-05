@@ -1,0 +1,12 @@
+name: Setup Git credentials
+description: Sets up Git credentials for the action
+runs:
+  using: "composite"
+  steps:
+    - name: Set Git user name and email
+      run: |
+        # Below are credentials for the built-in GitHub Actions bot: https://github.com/orgs/community/discussions/26560
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global push.followTags true
+      shell: bash
