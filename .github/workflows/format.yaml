@@ -14,7 +14,7 @@ jobs:
           ref: ${{ github.base_href || github.ref}}
 
       - name: Set up Git credentials
-        uses: ./.github/actions/setup-git-credentials
+        uses: ./.github/actions/set-git-credentials
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
@@ -28,7 +28,7 @@ jobs:
         run: yarn format
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update report
