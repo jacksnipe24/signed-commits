@@ -25,6 +25,18 @@ jobs:
       - name: Set up Git credentials
         uses: ./.github/actions/setup-git-credentials
 
+      - name: Check if DESTINATION_BRANCH exists
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DESTINATION_BRANCH: test-random
+        run: |
+          BRANCH_EXISTENCE=$( gh api /repos/:owner/:repo/git/ref/heads/$DESTINATION_BRANCH --check-status=never || echo "error" )
+          if [ "$BRANCH_EXISTENCE" = "error" ]; then
+              gh api /repos/:owner/:repo/git/refs \
+                  --field ref="refs/heads/$DESTINATION_BRANCH" \
+                  --field sha=$( git rev-parse HEAD )
+          fi
+
       - name: Commit changes
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
