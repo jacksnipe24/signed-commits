@@ -26,28 +26,8 @@ jobs:
         uses: ./.github/actions/setup-git-credentials
 
       - name: Create New Branch
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-              const { data: baseRef } = await github.git.getRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: 'heads/main'
-              })
-              
-              const { data: commit } = await github.git.getCommit({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                commit_sha: github.context.sha
-              })
-              
-              await github.git.createRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: `refs/heads/new-branch`,
-                sha: commit.sha
-              })
+        run: |
+          gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/new-branch"
         
 
       - name: Commit changes
