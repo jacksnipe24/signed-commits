@@ -41,7 +41,7 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             FILE_TO_COMMIT: data.csv
-            DESTINATION_BRANCH: test-random
+            DESTINATION_BRANCH: testrandom
         run: |
             export TODAY=$( date -u '+%Y-%m-%d' )
             export MESSAGE="chore: regenerate $FILE_TO_COMMIT for $TODAY"
