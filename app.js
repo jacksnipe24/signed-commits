@@ -9,7 +9,6 @@ function hanoiTower(num, fromRod, toRod, auxRod) {
 
     fromRod,
 
-
     auxRod,
     toRod
   );
