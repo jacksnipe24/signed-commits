@@ -8,6 +8,9 @@ function hanoiTower(num, fromRod, toRod, auxRod) {
     num - 1,
 
     fromRod,
+
+
+
     auxRod,
     toRod
   );
