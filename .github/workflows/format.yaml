@@ -1,27 +1,25 @@
 name: Format code with Prettier and open pull request
-
-on:
+'on':
   push:
     branches:
       - test
-
 jobs:
-createVersionBumpPR:
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: ${{ github.base_ref || github.ref }} # Explicit ref required to push from PR because of github internals
-    - uses: ./.github/actions/setup-git-credentials
-    - id: create-pr
-      name: Create PR
-      uses: peter-evans/create-pull-request@v3 # Creates a new branch, adds a commit, and opens a PR
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: 'commit message'
-        title: 'title'
-        body: |
-          body.
-        branch: format
-        delete-branch: true
-        base: ${{ github.base_ref || 'main' }}
+  createVersionBumpPR:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: '${{ github.base_ref || github.ref }}'
+      - uses: ./.github/actions/setup-git-credentials
+      - id: create-pr
+        name: Create PR
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: '${{ secrets.GITHUB_TOKEN }}'
+          commit-message: commit message
+          title: title
+          body: |
+            body.
+          branch: format
+          delete-branch: true
+          base: '${{ github.base_ref || ''main'' }}'
