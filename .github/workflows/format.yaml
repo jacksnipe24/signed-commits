@@ -25,11 +25,36 @@ jobs:
       - name: Set up Git credentials
         uses: ./.github/actions/setup-git-credentials
 
+      - name: Create New Branch
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+              const { data: baseRef } = await github.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'heads/main'
+              })
+              
+              const { data: commit } = await github.git.getCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: github.context.sha
+              })
+              
+              await github.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `refs/heads/new-branch`,
+                sha: commit.sha
+              })
+        
+
       - name: Commit changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: app.js
-          DESTINATION_BRANCH: main
+          DESTINATION_BRANCH: new-branch
         run: |
           export TODAY=$( date -u '+%Y-%m-%d' )
           export MESSAGE="chore: regenerate $FILE_TO_COMMIT for $TODAY"
