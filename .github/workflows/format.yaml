@@ -22,13 +22,14 @@ jobs:
       - name: Format code with Prettier
         run: yarn format
 
+      - name: Set up Git credentials
+        uses: ./.github/actions/setup-git-credentials
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update report
-          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           branch: example-patches
           delete-branch: true
           base: main
