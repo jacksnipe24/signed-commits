@@ -29,8 +29,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git checkout -b branch3
-          gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/branch3"
+          git checkout -b branch4
+          gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/branch4"
 
       - name: Print Branches
         run: |
@@ -41,7 +41,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: app.js
-          DESTINATION_BRANCH: branch3
+          DESTINATION_BRANCH: branch4
         run: |
           export TODAY=$( date -u '+%Y-%m-%d' )
           export MESSAGE="chore: regenerate $FILE_TO_COMMIT for $TODAY"
@@ -61,6 +61,6 @@ jobs:
           gh api --method POST /repos/:owner/:repo/pulls \
             --field title="Amazing new feature" \
             --field body="body" \
-            --field head="newBranch" \
+            --field head="branch4" \
             --field base="main"    
      
