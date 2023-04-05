@@ -26,6 +26,8 @@ jobs:
         uses: ./.github/actions/setup-git-credentials
 
       - name: Create New Branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/new-branch"
         
