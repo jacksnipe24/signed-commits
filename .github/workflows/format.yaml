@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.base_href || github.ref}}
 
       - name: Set up Git credentials
         uses: ./.github/actions/set-git-credentials
