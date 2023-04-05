@@ -1,5 +1,4 @@
 function hanoiTower(num, fromRod, toRod, auxRod) {
-
   if (num === 1) {
 
     console.log(`Move disk 1 from rod ${fromRod} to rod ${toRod}`);
