@@ -20,6 +20,6 @@ jobs:
           title: title
           body: |
             body.
-          branch: format
+          branch: test
           delete-branch: true
           base: main
