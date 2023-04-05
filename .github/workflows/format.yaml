@@ -42,10 +42,13 @@ jobs:
               --field branch="$DESTINATION_BRANCH" \
               --field sha="$SHA"
           
-          
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v3.10.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-          base: test
+      - name: OPEN PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --method POST /repos/OWNER/REPO/pulls \
+            --field title="Amazing new feature" \
+            --field body="body" \
+            --field head="test" \
+            --field base="main"    
+     
