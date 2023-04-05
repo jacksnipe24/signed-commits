@@ -23,7 +23,7 @@ jobs:
         run: yarn format
 
       - name: Set up Git credentials
-        uses: ./.github/actions/setup-git-credentials
+        uses: ./.github/actions/setup-git-credentials/action.yaml
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
