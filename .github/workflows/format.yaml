@@ -23,12 +23,11 @@ jobs:
         run: yarn format
 
       - name: Create Pull Request
-        id: cpr
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update report
-          committer: GitHub <noreply@github.com>
+          committer: Display Name <email@address.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           branch: example-patches
           delete-branch: true
