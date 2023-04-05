@@ -55,16 +55,12 @@ jobs:
             --field sha="$SHA"
 
       - name: OPEN PR
-        uses: peter-evans/create-pull-request@v5
-        with:
-          branch: branch4
-          base: main
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        run: |
-#          gh api --method POST /repos/:owner/:repo/pulls \
-#            --field title="Amazing new feature" \
-#            --field body="body" \
-#            --field head="branch4" \
-#            --field base="main"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --method POST /repos/:owner/:repo/pulls \
+            --field title="Amazing new feature" \
+            --field body="body" \
+            --field head="branch4" \
+            --field base="main"    
      
