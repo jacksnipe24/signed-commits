@@ -28,7 +28,7 @@ jobs:
       - name: Commit changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_TO_COMMIT: data.csv
+          FILE_TO_COMMIT: app.js
           DESTINATION_BRANCH: main
         run: |
           export TODAY=$( date -u '+%Y-%m-%d' )

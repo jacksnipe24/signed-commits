@@ -5,6 +5,9 @@ function hanoiTower(num, fromRod, toRod, auxRod) {
     return;
   }
 
+
+
+
   hanoiTower(
     num - 1,
 
