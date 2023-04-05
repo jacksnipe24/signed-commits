@@ -47,6 +47,5 @@ jobs:
         uses: peter-evans/create-pull-request@v3.10.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: test
-          delete-branch: true
-          base: main
+          branch: main
+          base: test
