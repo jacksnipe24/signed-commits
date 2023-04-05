@@ -36,7 +36,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: app.js
-          DESTINATION_BRANCH: new-branch
+          DESTINATION_BRANCH: heads/new-branch
         run: |
           export TODAY=$( date -u '+%Y-%m-%d' )
           export MESSAGE="chore: regenerate $FILE_TO_COMMIT for $TODAY"
