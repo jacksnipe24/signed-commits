@@ -27,21 +27,21 @@ jobs:
 
       - name: Commit changes
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            FILE_TO_COMMIT: data.csv
-            DESTINATION_BRANCH: test
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILE_TO_COMMIT: data.csv
+          DESTINATION_BRANCH: newBranch
         run: |
-            export TODAY=$( date -u '+%Y-%m-%d' )
-            export MESSAGE="chore: regenerate $FILE_TO_COMMIT for $TODAY"
-            export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
-            export CONTENT=$( base64 -i $FILE_TO_COMMIT )
-            gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
-              --field message="$MESSAGE" \
-              --field content="$CONTENT" \
-              --field encoding="base64" \
-              --field branch="$DESTINATION_BRANCH" \
-              --field sha="$SHA"
-          
+          export TODAY=$( date -u '+%Y-%m-%d' )
+          export MESSAGE="chore: regenerate $FILE_TO_COMMIT for $TODAY"
+          export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
+          export CONTENT=$( base64 -i $FILE_TO_COMMIT )
+          gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+            --field message="$MESSAGE" \
+            --field content="$CONTENT" \
+            --field encoding="base64" \
+            --field branch="$DESTINATION_BRANCH" \
+            --field sha="$SHA"
+
       - name: OPEN PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,6 +49,6 @@ jobs:
           gh api --method POST /repos/:owner/:repo/pulls \
             --field title="Amazing new feature" \
             --field body="body" \
-            --field head="test" \
+            --field head="newBranch" \
             --field base="main"    
      
