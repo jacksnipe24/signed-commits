@@ -16,10 +16,10 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: '${{ secrets.GITHUB_TOKEN }}'
-          commit-message: commit message
+          commit-message: 'commit message'
           title: title
           body: |
             body.
           branch: format
           delete-branch: true
-          base: '${{ github.base_ref || ''main'' }}'
+          base: main
