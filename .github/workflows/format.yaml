@@ -30,7 +30,7 @@ jobs:
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3.10.1
         with:
-          token: ${{ secrets.TEST }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           branch: format
           delete-branch: true
           commit-message: 'This Commit Automatically formats the code with Prettier'
