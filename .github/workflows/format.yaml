@@ -46,7 +46,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh api --method POST /repos/OWNER/REPO/pulls \
+          gh api --method POST /repos/:owner/:repo/pulls \
             --field title="Amazing new feature" \
             --field body="body" \
             --field head="test" \
