@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.base_href || github.ref}}
+
+      - name: Set up Git credentials
+        uses: ./.github/actions/setup-git-credentials
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
@@ -21,9 +26,6 @@ jobs:
 
       - name: Format code with Prettier
         run: yarn format
-
-      - name: Set up Git credentials
-        uses: ./.github/actions/setup-git-credentials/action.yaml
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
