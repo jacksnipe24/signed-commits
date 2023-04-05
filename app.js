@@ -14,7 +14,6 @@ function hanoiTower(num, fromRod, toRod, auxRod) {
   );
 
   console.log(`Move disk ${num} from rod ${fromRod} to rod ${toRod}`);
-
   hanoiTower(num - 1, auxRod, toRod, fromRod);
 }
 
