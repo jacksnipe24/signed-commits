@@ -67,8 +67,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh api --method POST /repos/:owner/:repo/pulls \
+          response=$(gh api --method POST /repos/:owner/:repo/pulls \
             --field title="Bump version to ${{ steps.get_version.outputs.VERSION_TAG }}" \
             --field body="PR body" \
             --field head="version-bump/${{ steps.get_version.outputs.VERSION_TAG }}" \
-            --field base="main"
+            --field base="main")
+          
+          pr_url=$(echo $response | jq -r '.html_url')
+          pr_number=$(echo $response | jq -r '.number')
+
+          echo "Created pull request: $pr_url (number $pr_number)"
