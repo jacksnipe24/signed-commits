@@ -19,8 +19,18 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Format code with Prettier
-        run: yarn format
+      - name: Bump version
+        run: yarn version --major
+
+      - name: get version
+        id: get_version
+        run: |
+          PACKAGE_VERSION=$(cat package.json \
+            | grep version \
+            | head -1 \
+            | awk -F: '{ print $2 }' \
+            | sed 's/[", ]//g')  
+          echo "::set-output name=VERSION_TAG::$PACKAGE_VERSION"
 
       - name: Set up Git credentials
         uses: ./.github/actions/setup-git-credentials
@@ -29,7 +39,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git checkout -b branch4
+          git checkout -b ${{ steps.get_version.outputs.VERSION_TAG }}
           gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/branch4"
 
       - name: Print Branches
@@ -40,8 +50,8 @@ jobs:
       - name: Commit changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_TO_COMMIT: app.js
-          DESTINATION_BRANCH: branch4
+          FILE_TO_COMMIT: package.json
+          DESTINATION_BRANCH: ${{ steps.get_version.outputs.VERSION_TAG }}
         run: |
           export TODAY=$( date -u '+%Y-%m-%d' )
           export MESSAGE="chore: regenerate $FILE_TO_COMMIT for $TODAY"
@@ -61,6 +71,6 @@ jobs:
           gh api --method POST /repos/:owner/:repo/pulls \
             --field title="Amazing new feature" \
             --field body="body" \
-            --field head="branch4" \
+            --field head=${{ steps.get_version.outputs.VERSION_TAG }} \
             --field base="main"    
      
