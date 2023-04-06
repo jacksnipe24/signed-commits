@@ -53,7 +53,7 @@ jobs:
         run: |
           export TODAY=$( date -u '+%Y-%m-%d' )
           export MESSAGE="${{ steps.get_version.outputs.VERSION_TAG }}"
-          export SHA=$( git rev-parse HEAD )
+          export SHA=$( git rev-parse $FILE_TO_COMMIT )
           export CONTENT=$( base64 -i $FILE_TO_COMMIT )
           gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
             --field message="$MESSAGE" \
