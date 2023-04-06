@@ -77,3 +77,10 @@ jobs:
           pr_number=$(echo $response | jq -r '.number')
 
           echo "Created pull request: $pr_url (number $pr_number)"
+          
+          gh api --method PATCH /repos/:owner/:repo/issues/:pull_number \
+          --input - << EOF
+          { 
+            "labels": ["version-bump"]
+          }
+          EOF
