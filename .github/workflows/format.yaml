@@ -45,6 +45,7 @@ jobs:
       - name: Print Branches
         run: |
           git branch -a
+          echo branch name is  ${{ steps.get_version.outputs.VERSION_TAG }}
         
 
       - name: Commit changes
