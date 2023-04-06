@@ -24,7 +24,7 @@ jobs:
 
       - name: Bump version
         run: |
-          if ! npm version major ; then
+          if ! yarn version --major ; then
             MESSAGE="Failed to tick version with `npm version $VERSION_INSTRUCTION`"
             echo "MESSAGE=$MESSAGE" >> $GITHUB_OUTPUT
             exit 1
