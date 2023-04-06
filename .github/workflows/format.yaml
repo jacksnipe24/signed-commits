@@ -22,14 +22,11 @@ jobs:
       - name: Set up Git credentials
         uses: ./.github/actions/setup-git-credentials
 
-      - name: Bump version
+      - name:   Bump version
+        run: yarn version --major
+
+      - name: set version
         run: |
-          if ! yarn version --major ; then
-            MESSAGE="Failed to tick version with `npm version $VERSION_INSTRUCTION`"
-            echo "MESSAGE=$MESSAGE" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-          
           PACKAGE_VERSION=$(cat package.json \
             | grep version \
             | head -1 \
