@@ -22,10 +22,11 @@ jobs:
       - name: Set up Git credentials
         uses: ./.github/actions/setup-git-credentials
 
-      - name:   Bump version
-        run: yarn version --major
+      - name: Bump version
+        run: yarn format
 
-      - name: set version
+      - name: get version
+        id: get_version
         run: |
           PACKAGE_VERSION=$(cat package.json \
             | grep version \
@@ -33,20 +34,17 @@ jobs:
             | awk -F: '{ print $2 }' \
             | sed 's/[", ]//g')  
           echo "::set-output name=VERSION_TAG::$PACKAGE_VERSION"
-
       - name: Create New Branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "b name ${{ steps.get_version.outputs.VERSION_TAG }}"
           git checkout -b version-bump/${{ steps.get_version.outputs.VERSION_TAG }}
           gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/version-bump/${{ steps.get_version.outputs.VERSION_TAG }}"
-
       - name: Print Branches
         run: |
           git branch -a
           echo branch name is  version-bump/${{ steps.get_version.outputs.VERSION_TAG }}
-        
+
 
       - name: OPEN PR
         env:
@@ -56,5 +54,4 @@ jobs:
             --field title="Bump version to ${{ steps.get_version.outputs.VERSION_TAG }}" \
             --field body="PR body" \
             --field head="version-bump/${{ steps.get_version.outputs.VERSION_TAG }}" \
-            --field base="main"    
-     
+            --field base="main"
