@@ -55,7 +55,7 @@ jobs:
           DESTINATION_BRANCH: "version-bump/${{ steps.get_version.outputs.VERSION_TAG }}"
         run: |
           export TODAY=$( date -u '+%Y-%m-%d' )
-          export MESSAGE="chore: regenerate $FILE_TO_COMMIT for $TODAY"
+          export MESSAGE="$DESTINATION_BRANCH"
           export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
           export CONTENT=$( base64 -i $FILE_TO_COMMIT )
           gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
@@ -70,8 +70,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh api --method POST /repos/:owner/:repo/pulls \
-            --field title="Amazing new feature" \
-            --field body="body" \
+            --field title="Bump version to ${{ steps.get_version.outputs.VERSION_TAG }}" \
+            --field body="PR body" \
             --field head="version-bump/${{ steps.get_version.outputs.VERSION_TAG }}" \
             --field base="main"    
      
