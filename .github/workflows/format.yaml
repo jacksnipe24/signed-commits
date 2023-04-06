@@ -35,7 +35,7 @@ jobs:
             | head -1 \
             | awk -F: '{ print $2 }' \
             | sed 's/[", ]//g')  
-          echo "VERSION_TAG=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+          echo "::set-output name=VERSION_TAG::$PACKAGE_VERSION"
 
       - name: Create New Branch
         env:
