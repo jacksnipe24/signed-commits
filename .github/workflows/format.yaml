@@ -34,11 +34,13 @@ jobs:
             | awk -F: '{ print $2 }' \
             | sed 's/[", ]//g')  
           echo "::set-output name=VERSION_TAG::$PACKAGE_VERSION"
+
       - name: Create New Branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git checkout -b version-bump/${{ steps.get_version.outputs.VERSION_TAG }}
+          cat package.json
           gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/version-bump/${{ steps.get_version.outputs.VERSION_TAG }}"
 
       - name: Commit changes
