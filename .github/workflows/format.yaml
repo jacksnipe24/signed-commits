@@ -24,13 +24,18 @@ jobs:
 
       - name: Bump version
         run: |
-          npm version major
+          if ! npm version $VERSION_INSTRUCTION ; then
+            MESSAGE="Failed to tick version with `npm version $VERSION_INSTRUCTION`"
+            echo "MESSAGE=$MESSAGE" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          
           PACKAGE_VERSION=$(cat package.json \
             | grep version \
             | head -1 \
             | awk -F: '{ print $2 }' \
             | sed 's/[", ]//g')  
-          echo "::set-output name=VERSION_TAG::$PACKAGE_VERSION"
+          echo "VERSION_TAG=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
 
       - name: Create New Branch
         env:
