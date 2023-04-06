@@ -39,27 +39,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git checkout -b version-bump/${{ steps.get_version.outputs.VERSION_TAG }}
-          cat package.json
+          git checkout -B version-bump/${{ steps.get_version.outputs.VERSION_TAG }}
+          git checkout main
+          git reset --hard origin/main
+          git checkout version-bump/${{ steps.get_version.outputs.VERSION_TAG }}
           gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/version-bump/${{ steps.get_version.outputs.VERSION_TAG }}"
 
-      - name: Commit changes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_TO_COMMIT: package.json
-          DESTINATION_BRANCH: "version-bump/${{ steps.get_version.outputs.VERSION_TAG }}"
-        run: |
-          git branch
-          export TODAY=$( date -u '+%Y-%m-%d' )
-          export MESSAGE="${{ steps.get_version.outputs.VERSION_TAG }}"
-          export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
-          export CONTENT=$( base64 -i $FILE_TO_COMMIT )
-          gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
-            --field message="$MESSAGE" \
-            --field content="$CONTENT" \
-            --field encoding="base64" \
-            --field branch="$DESTINATION_BRANCH" \
-            --field sha="$SHA"
       - name: OPEN PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
