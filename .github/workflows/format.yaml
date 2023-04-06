@@ -23,7 +23,7 @@ jobs:
         uses: ./.github/actions/setup-git-credentials
 
       - name: Bump version
-        run: yarn version --major
+        run: yarn format
 
       - name: get version
         id: get_version
@@ -51,8 +51,8 @@ jobs:
       - name: Commit changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_TO_COMMIT: package.json
-          DESTINATION_BRANCH: "version-bump/8.0.0"
+          FILE_TO_COMMIT: app.js
+          DESTINATION_BRANCH: "version-bump/${{ steps.get_version.outputs.VERSION_TAG }}"
         run: |
           export TODAY=$( date -u '+%Y-%m-%d' )
           export MESSAGE="chore: regenerate $FILE_TO_COMMIT for $TODAY"
