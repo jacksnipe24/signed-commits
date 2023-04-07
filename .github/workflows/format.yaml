@@ -72,7 +72,8 @@ jobs:
             echo "Created pull request: $pr_url (number $pr_number)"
             
             gh api --method PATCH /repos/:owner/:repo/issues/$pr_number \
-            --input -
+            --input - << EOF
             { 
               "labels": ["version-bump"]
             }
+            EOF
