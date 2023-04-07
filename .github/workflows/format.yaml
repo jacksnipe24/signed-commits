@@ -57,10 +57,10 @@ jobs:
           --field branch="$DESTINATION_BRANCH" \
           --field sha="$SHA" | jq -r '.commit.sha')
           
-          
+          echo "before"
           git add .
           git commit -m "${{ steps.tick-version.outputs.VERSION_TAG }}"
-          
+          echo "after"
                   
           TAG_RESULT=$(gh api --method POST /repos/:owner/:repo/git/tags \
           --field tag="${{ steps.tick-version.outputs.VERSION_TAG }}" \
@@ -69,13 +69,6 @@ jobs:
           --field type="commit"\
           --debug 2>&1)
           
-          # Check for errors and print debugging output
-          TAG_RESPONSE_CODE=$(echo "$TAG_RESULT" | grep -oP "(?<=HTTP/1.1 )\d{3}")
-          if [ "$TAG_RESPONSE_CODE" != "201" ]; then
-          echo "Error creating tag: $TAG_RESULT"
-            else
-            echo "Tag created successfully"
-            fi
       
 
       - name: OPEN PR
