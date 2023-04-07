@@ -34,9 +34,6 @@ jobs:
             | awk -F: '{ print $2 }' \
             | sed 's/[", ]//g')  
           echo "VERSION_TAG=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
-          
-        
-
       - name: Create PR
         id: create-pr
         env:
@@ -75,8 +72,8 @@ jobs:
           --field ref="refs/tags/v${{ steps.tick-version.outputs.VERSION_TAG }}" \
           --field sha="$NEW_TAG_SHA"
           
-         # at this point the new branch with one new commit is created so we open PR 
-         response=$(gh api --method POST /repos/:owner/:repo/pulls \
+          # at this point the new branch with one new commit is created so we open PR 
+          response=$(gh api --method POST /repos/:owner/:repo/pulls \
           --field title="Bump version to ${{ steps.tick-version.outputs.VERSION_TAG }}" \
           --field body="This PR was created by the [createVersionBumpPR](./.github/actions/tick-version) GitHub action. It will be merged automatically once checks are successful." \
           --field head="$VERSION_BRANCH" \
