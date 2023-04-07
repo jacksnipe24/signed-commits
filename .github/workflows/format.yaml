@@ -47,7 +47,6 @@ jobs:
           gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/version-bump/${{ steps.tick-version.outputs.VERSION_TAG}}"
           
           git reset HEAD~
-          git add .
           export MESSAGE="${{ steps.tick-version.outputs.VERSION_TAG }}"
           export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
           export CONTENT=$( base64 -i $FILE_TO_COMMIT )
@@ -60,20 +59,6 @@ jobs:
                   
     
           
-          TAG_RESULT=$(gh api --method POST /repos/:owner/:repo/git/tags \
-            --field tag="${{ steps.tick-version.outputs.VERSION_TAG }}" \
-            --field message="${{ steps.tick-version.outputs.VERSION_TAG }}" \
-            --field object="$NEW_COMMIT_SHA" \
-            --field type="commit"\
-            --debug 2>&1)
-          
-          # Check for errors and print debugging output
-            TAG_RESPONSE_CODE=$(echo "$TAG_RESULT" | grep -oP "(?<=HTTP/1.1 )\d{3}")
-            if [ "$TAG_RESPONSE_CODE" != "201" ]; then
-          echo "Error creating tag: $TAG_RESULT"
-            else
-            echo "Tag created successfully"
-            fi
 
       - name: OPEN PR
         env:
