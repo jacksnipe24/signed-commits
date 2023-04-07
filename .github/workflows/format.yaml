@@ -33,7 +33,7 @@ jobs:
             | head -1 \
             | awk -F: '{ print $2 }' \
             | sed 's/[", ]//g')  
-          echo "::set-output name=VERSION_TAG::$PACKAGE_VERSION"
+          echo "VERSION_TAG=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
           
         
 
@@ -57,16 +57,22 @@ jobs:
           --field sha="$SHA"
           git checkout main --force 
 
-      - id: create-pr
-        name: Create PR
-        uses: peter-evans/create-pull-request@v3 # Creates a new branch, adds a commit, and opens a PR
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: '${{ steps.tick-version.outputs.VERSION_TAG }}'
-          title: 'Bump version to ${{ steps.tick-version.outputs.VERSION_TAG }}'
-          body: |
-              This PR was created by the [createVersionBumpPR](./.github/actions/tick-version) GitHub action. It will be merged automatically once checks are successful.
-          branch: 'version-bump/${{ steps.tick-version.outputs.VERSION_TAG }}'
-          delete-branch: true
-          labels: version-bump
-          base: ${{ github.base_ref || 'main' }}
+      - name: OPEN PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            response=$(gh api --method POST /repos/:owner/:repo/pulls \
+              --field title="Bump version to ${{ steps.tick-version.outputs.VERSION_TAG }}" \
+              --field body="This PR was created by the [createVersionBumpPR](./.github/actions/tick-version) GitHub action. It will be merged automatically once checks are successful." \
+              --field head="version-bump/${{ steps.tick-version.outputs.VERSION_TAG }}" \
+              --field base="${{ github.base_ref || 'main' }}")
+            
+            pr_url=$(echo $response | jq -r '.html_url')
+            pr_number=$(echo $response | jq -r '.number')
+            echo "Created pull request: $pr_url (number $pr_number)"
+            
+            gh api --method PATCH /repos/:owner/:repo/issues/$pr_number \
+            --input -
+            { 
+              "labels": ["version-bump"]
+            }
