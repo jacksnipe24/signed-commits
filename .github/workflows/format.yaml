@@ -56,6 +56,9 @@ jobs:
           --field encoding="base64" \
           --field branch="$DESTINATION_BRANCH" \
           --field sha="$SHA" | jq -r '.commit.sha')
+          
+          
+          git diff
                   
     
       
