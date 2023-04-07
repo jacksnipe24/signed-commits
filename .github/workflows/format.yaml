@@ -91,7 +91,7 @@ jobs:
           # as a last step we create a label for PR
          gh api --method PATCH /repos/:owner/:repo/issues/$pr_number \
           --input - << EOF
-          { 
-            "labels": ["version-bump"]
-          }
+            { 
+              "labels": ["version-bump"]
+            }
           EOF
