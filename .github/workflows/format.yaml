@@ -60,8 +60,9 @@ jobs:
         uses: peter-evans/create-pull-request@v3 # Creates a new branch, adds a commit, and opens a PR
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'Bump version to ${{ steps.tick-version.outputs.VERSION_TAG }}, original branch: ${{ github.head_ref || github.ref_name}}'
+          commit-message: '${{ steps.tick-version.outputs.VERSION_TAG }}'
           title: 'Bump version to ${{ steps.tick-version.outputs.VERSION_TAG }}'
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           body: |
               This PR was created by the [createVersionBumpPR](./.github/actions/tick-version) GitHub action. It will be merged automatically once checks are successful.
           branch: 'version-bump/${{ steps.tick-version.outputs.VERSION_TAG }}'
