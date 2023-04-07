@@ -47,6 +47,8 @@ jobs:
           gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/version-bump/${{ steps.tick-version.outputs.VERSION_TAG}}"
           
           git reset HEAD~
+          git status
+          git diff
           export MESSAGE="${{ steps.tick-version.outputs.VERSION_TAG }}"
           export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
           export CONTENT=$( base64 -i $FILE_TO_COMMIT )
