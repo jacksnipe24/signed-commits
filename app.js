@@ -21,7 +21,6 @@ function hanoiTower(num, fromRod, toRod, auxRod) {
 
 
 
-
   hanoiTower(num - 1, fromRod, auxRod, toRod);
 
 
