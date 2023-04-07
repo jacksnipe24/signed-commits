@@ -50,7 +50,7 @@ jobs:
           export MESSAGE="${{ steps.tick-version.outputs.VERSION_TAG }}"
           export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
           export CONTENT=$( base64 -i $FILE_TO_COMMIT )
-          export NEW_COMMIT_SHA=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+          NEW_COMMIT_SHA=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
             --field message="$MESSAGE" \
             --field content="$CONTENT" \
           --field encoding="base64" \
@@ -59,7 +59,7 @@ jobs:
           
           
           TAG_RESPONSE=$(gh api --method POST /repos/:owner/:repo/git/tags \
-          --field tag="${{ steps.tick-version.outputs.VERSION_TAG }}" \
+          --field tag="v${{ steps.tick-version.outputs.VERSION_TAG }}" \
           --field message="${{ steps.tick-version.outputs.VERSION_TAG }}" \
           --field object="$NEW_COMMIT_SHA" \
           --field type="commit")
@@ -67,7 +67,7 @@ jobs:
           NEW_TAG_SHA=$(echo "$TAG_RESPONSE" | jq -r '.sha')
 
           gh api --method POST /repos/:owner/:repo/git/refs \
-          --field ref="refs/tags/${{ steps.tick-version.outputs.VERSION_TAG }}" \
+          --field ref="refs/tags/v${{ steps.tick-version.outputs.VERSION_TAG }}" \
           --field sha="$NEW_TAG_SHA"
           
       
