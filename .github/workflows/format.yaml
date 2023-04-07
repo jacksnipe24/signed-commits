@@ -89,9 +89,9 @@ jobs:
           echo "PR_URL=$pr_url" >> $GITHUB_OUTPUT
           
           # as a last step we create a label for PR
-         gh api --method PATCH /repos/:owner/:repo/issues/$pr_number \
-          --input - << EOF
-          { 
-            "labels": ["version-bump"]
-          }
-          EOF
+          gh api --method PATCH /repos/:owner/:repo/issues/$pr_number \
+            --input - << EOF
+            { 
+              "labels": ["version-bump"]
+            }
+            EOF
