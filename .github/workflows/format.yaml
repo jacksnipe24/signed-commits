@@ -26,7 +26,7 @@ jobs:
         run: yarn version --major
 
       - name: get version
-        id: get_version
+        id: tick-version
         run: |
           PACKAGE_VERSION=$(cat package.json \
             | grep version \
@@ -35,25 +35,16 @@ jobs:
             | sed 's/[", ]//g')  
           echo "::set-output name=VERSION_TAG::$PACKAGE_VERSION"
           
-          
-          
-
-# step above adds new commit to current HEAD
-      - name: Create New Branch
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git checkout -b version-bump/${{ steps.get_version.outputs.VERSION_TAG }}
-          gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/version-bump/${{ steps.get_version.outputs.VERSION_TAG}}"
+        
 
       - name: Commit changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: package.json
-          DESTINATION_BRANCH: "version-bump/${{ steps.get_version.outputs.VERSION_TAG }}"
+          DESTINATION_BRANCH: "main"
         run: |
           git reset HEAD~
-          export MESSAGE="${{ steps.get_version.outputs.VERSION_TAG }}"
+          export MESSAGE="${{ steps.tick-version.outputs.VERSION_TAG }}"
           export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
           export CONTENT=$( base64 -i $FILE_TO_COMMIT )
           gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
@@ -63,24 +54,18 @@ jobs:
           --field branch="$DESTINATION_BRANCH" \
           --field sha="$SHA"   
 
-      - name: OPEN PR
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          response=$(gh api --method POST /repos/:owner/:repo/pulls \
-            --field title="Bump version to ${{ steps.get_version.outputs.VERSION_TAG }}" \
-            --field body="PR body" \
-            --field head="version-bump/${{ steps.get_version.outputs.VERSION_TAG }}" \
-            --field base="main")
-          
-          pr_url=$(echo $response | jq -r '.html_url')
-          pr_number=$(echo $response | jq -r '.number')
-
-          echo "Created pull request: $pr_url (number $pr_number)"
-          
-          gh api --method PATCH /repos/:owner/:repo/issues/$pr_number \
-          --input - << EOF
-          { 
-            "labels": ["version-bump"]
-          }
-          EOF
+      - id: create-pr
+        name: Create PR
+        if: inputs.dry-run != 'true'
+        uses: peter-evans/create-pull-request@v3 # Creates a new branch, adds a commit, and opens a PR
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'Bump version to ${{ steps.tick-version.outputs.VERSION_TAG }}, original branch: ${{ github.head_ref || github.ref_name}}'
+          title: 'Bump version to ${{ steps.tick-version.outputs.VERSION_TAG }}'
+          body: |
+              This PR was created by the [createVersionBumpPR](./.github/actions/tick-version) GitHub action. It will be merged automatically once checks are successful.
+          branch: 'version-bump/${{ steps.tick-version.outputs.VERSION_TAG }}'
+          delete-branch: true
+          reviewers: ${{github.event.issue.user.login }}
+          labels: version-bump
+          base: ${{ github.base_ref || 'main' }}
