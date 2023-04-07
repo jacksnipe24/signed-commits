@@ -67,7 +67,7 @@ jobs:
           NEW_TAG_SHA=$(echo "$TAG_RESPONSE" | jq -r '.sha')
 
           gh api --method POST /repos/:owner/:repo/git/refs \
-          --field ref="refs/tags/$TAG_NAME" \
+          --field ref="refs/tags/${{ steps.tick-version.outputs.VERSION_TAG }}" \
           --field sha="$NEW_TAG_SHA"
           
       
