@@ -50,12 +50,18 @@ jobs:
           export MESSAGE="${{ steps.tick-version.outputs.VERSION_TAG }}"
           export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
           export CONTENT=$( base64 -i $FILE_TO_COMMIT )
-          gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+          NEW_COMMIT_SHA=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
             --field message="$MESSAGE" \
             --field content="$CONTENT" \
           --field encoding="base64" \
           --field branch="$DESTINATION_BRANCH" \
-          --field sha="$SHA"
+          --field sha="$SHA" | jq -r '.commit.sha')
+          
+          gh api --method POST /repos/:owner/:repo/git/tags \
+            --field tag="${{ steps.tick-version.outputs.VERSION_TAG }}" \
+            --field message="${{ steps.tick-version.outputs.VERSION_TAG }}" \
+            --field object="$NEW_COMMIT_SHA" \
+            --field type="commit"
 
       - name: OPEN PR
         env:
