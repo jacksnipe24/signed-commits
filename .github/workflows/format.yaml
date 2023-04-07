@@ -55,7 +55,7 @@ jobs:
           --field encoding="base64" \
           --field branch="$DESTINATION_BRANCH" \
           --field sha="$SHA"
-          git checkout main
+          git checkout main --force 
 
       - id: create-pr
         name: Create PR
