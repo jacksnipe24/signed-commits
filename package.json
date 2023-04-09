@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "format": "prettier   --write ."
+    "format": "prettier  --write ."
   },
   "dependencies": {
     "prettier": "^2.8.7"
