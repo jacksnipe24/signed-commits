@@ -35,13 +35,16 @@ jobs:
             | sed 's/[", ]//g')  
           echo "VERSION_TAG=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
       - name: Create commit
+        id: create-commit
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILE_TO_COMMIT: package.json
           VERSION_BRANCH: "version-bump/${{ steps.tick-version.outputs.VERSION_TAG }}"
         run: |
           # start with creating new branch 'version-bump/VERSION_TAG', also update the reference to the origin
           git checkout -b $VERSION_BRANCH
           gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/$VERSION_BRANCH"
+          echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
           
           # move the branch pointer one commit backwards so that we can manually commit changes done by 'npm version ...' command
           git reset HEAD~
@@ -74,14 +77,12 @@ jobs:
         id: create-pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_TO_COMMIT: package.json
-          VERSION_BRANCH: "version-bump/${{ steps.tick-version.outputs.VERSION_TAG }}"
         run: |
           # at this point the new branch with one new commit is created so we open PR 
           response=$(gh api --method POST /repos/:owner/:repo/pulls \
           --field title="Bump version to ${{ steps.tick-version.outputs.VERSION_TAG }}" \
           --field body="This PR was created by the [createVersionBumpPR](./.github/actions/tick-version) GitHub action. It will be merged automatically once checks are successful." \
-          --field head="$VERSION_BRANCH" \
+          --field head="${{ steps.create-commit.outputs.VERSION_BRANCH }}" \
           --field base="${{ github.base_ref || 'main' }}")
             
           pr_url=$(echo $response | jq -r '.html_url')
