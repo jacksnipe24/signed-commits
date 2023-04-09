@@ -34,11 +34,9 @@ jobs:
             | awk -F: '{ print $2 }' \
             | sed 's/[", ]//g')  
           echo "VERSION_TAG=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
-      - name: Create PR
-        id: create-pr
+      - name: Create commit
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_TO_COMMIT: package.json
           VERSION_BRANCH: "version-bump/${{ steps.tick-version.outputs.VERSION_TAG }}"
         run: |
           # start with creating new branch 'version-bump/VERSION_TAG', also update the reference to the origin
@@ -53,8 +51,8 @@ jobs:
           SHA=$( git rev-parse $VERSION_BRANCH:$FILE_TO_COMMIT )
           CONTENT=$( base64 -i $FILE_TO_COMMIT )
           NEW_COMMIT_SHA=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
-            --field message="$MESSAGE" \
-            --field content="$CONTENT" \
+           --field message="$MESSAGE" \
+           --field content="$CONTENT" \
           --field encoding="base64" \
           --field branch="$VERSION_BRANCH" \
           --field sha="$SHA" | jq -r '.commit.sha')
@@ -71,7 +69,14 @@ jobs:
           gh api --method POST /repos/:owner/:repo/git/refs \
           --field ref="refs/tags/v${{ steps.tick-version.outputs.VERSION_TAG }}" \
           --field sha="$NEW_TAG_SHA"
-          
+
+      - name: Create PR
+        id: create-pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILE_TO_COMMIT: package.json
+          VERSION_BRANCH: "version-bump/${{ steps.tick-version.outputs.VERSION_TAG }}"
+        run: |
           # at this point the new branch with one new commit is created so we open PR 
           response=$(gh api --method POST /repos/:owner/:repo/pulls \
           --field title="Bump version to ${{ steps.tick-version.outputs.VERSION_TAG }}" \
