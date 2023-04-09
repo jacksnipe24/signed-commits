@@ -74,15 +74,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # at this point the new branch with one new commit is created so we open PR 
+          isPR=$(gh api --method GET /repos/:owner/:repo/pulls --jq "map(select(.head.ref == '${{ steps.create-commit.outputs.VERSION_BRANCH }}'))")
+
+          if [[ -z "$isPR" ]]; then
+          echo "No pull requests found for branch $branch"
           response=$(gh api --method POST /repos/:owner/:repo/pulls \
           --field title="Bump version to ${{ steps.tick-version.outputs.VERSION_TAG }}" \
           --field body="This PR was created by the [createVersionBumpPR](./.github/actions/tick-version) GitHub action. It will be merged automatically once checks are successful." \
           --field head="${{ steps.create-commit.outputs.VERSION_BRANCH }}" \
           --field base="${{ github.base_ref || 'main' }}")
-            
+          
           pr_url=$(echo $response | jq -r '.html_url')
           pr_number=$(echo $response | jq -r '.number')
-        
+          
           echo "pull-request-number=$pr_number" >> $GITHUB_OUTPUT
           echo "pull-request-url=$pr_url" >> $GITHUB_OUTPUT
           
@@ -93,3 +97,7 @@ jobs:
             "labels":["version-bump"]
           }
           EOF
+          else
+          echo "Pull requests found for branch $branch:"
+          echo "$response"
+          fi
