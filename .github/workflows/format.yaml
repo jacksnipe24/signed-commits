@@ -43,7 +43,7 @@ jobs:
         run: |
           # start with creating new branch 'version-bump/VERSION_TAG', also update the reference to the origin
           git checkout -b $VERSION_BRANCH
-          gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/$VERSION_BRANCH"
+          gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/$VERSION_BRANCH" -f force=true
           echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
           
           # move the branch pointer one commit backwards so that we can manually commit changes done by 'npm version ...' command
@@ -60,18 +60,7 @@ jobs:
           --field branch="$VERSION_BRANCH" \
           --field sha="$SHA" | jq -r '.commit.sha')
           
-          # create a tag from VERSION_TAG
-          TAG_RESPONSE=$(gh api --method POST /repos/:owner/:repo/git/tags \
-          --field tag="v${{ steps.tick-version.outputs.VERSION_TAG }}" \
-          --field message="${{ steps.tick-version.outputs.VERSION_TAG }}" \
-          --field object="$NEW_COMMIT_SHA" \
-          --field type="commit")
-          NEW_TAG_SHA=$(echo "$TAG_RESPONSE" | jq -r '.sha')
-
-          # update the reference so that the tag is visible in github
-          gh api --method POST /repos/:owner/:repo/git/refs \
-          --field ref="refs/tags/v${{ steps.tick-version.outputs.VERSION_TAG }}" \
-          --field sha="$NEW_TAG_SHA"
+          
 
       - name: Create PR
         id: create-pr
