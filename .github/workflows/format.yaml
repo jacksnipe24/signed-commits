@@ -48,9 +48,6 @@ jobs:
           if ! gh api -X GET /repos/:owner/:repo/git/ref/heads/$VERSION_BRANCH >/dev/null 2>&1; then
             echo "creating new branch"
              gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/$VERSION_BRANCH"
-          fi
-          echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
-          echo "after"
           
           # move the branch pointer one commit backwards so that we can manually commit changes done by 'npm version ...' command
           git reset HEAD~
@@ -65,16 +62,16 @@ jobs:
           --field encoding="base64" \
           --field branch="$VERSION_BRANCH" \
           --field sha="$SHA" | jq -r '.commit.sha')
-          
-          
-
+          fi
+          echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
+          echo "after"
       - name: Create PR
         id: create-pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # at this point the new branch with one new commit is created so we open PR 
-          echo "checking"
+          echo "checking ${{ steps.create-commit.outputs.VERSION_BRANCH }}"
           isPR=$(gh api --method GET /repos/:owner/:repo/pulls --jq "map(select(.head.ref == ${{ steps.create-commit.outputs.VERSION_BRANCH }}))")
           echo "checked"
           if [[ -z "$isPR" ]]; then
