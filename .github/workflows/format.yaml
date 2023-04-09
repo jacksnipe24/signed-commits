@@ -1,9 +1,9 @@
 name: Format code with Prettier and open pull request
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types:
+      - closed
 
 jobs:
   createPullRequest:
