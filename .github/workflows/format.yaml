@@ -72,7 +72,7 @@ jobs:
         run: |
           # at this point the new branch with one new commit is created so we open PR 
           echo "checking ${{ steps.create-commit.outputs.VERSION_BRANCH }}"
-          isPR=$(gh api --method GET /repos/:owner/:repo/pulls --jq "map(select(.head.ref == ${{ steps.create-commit.outputs.VERSION_BRANCH }}))")
+          isPR=$(gh api --method GET /repos/:owner/:repo/pulls --jq "map(select(.head.ref == \"${{ steps.create-commit.outputs.VERSION_BRANCH }}\"))")
           echo "checked"
           if [[ -z "$isPR" ]]; then
           echo "No pull requests found for branch $branch"
