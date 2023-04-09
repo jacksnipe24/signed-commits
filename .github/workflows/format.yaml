@@ -74,8 +74,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # at this point the new branch with one new commit is created so we open PR 
-          isPR=$(gh api --method GET /repos/:owner/:repo/pulls --jq "map(select(.head.ref == '${{ steps.create-commit.outputs.VERSION_BRANCH }}'))")
-
+          echo "checking"
+          isPR=$(gh api --method GET /repos/:owner/:repo/pulls --jq "map(select(.head.ref == ${{ steps.create-commit.outputs.VERSION_BRANCH }}))")
+          echo "checked"
           if [[ -z "$isPR" ]]; then
           echo "No pull requests found for branch $branch"
           response=$(gh api --method POST /repos/:owner/:repo/pulls \
