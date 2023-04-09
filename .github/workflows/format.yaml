@@ -43,6 +43,7 @@ jobs:
         run: |
           # start with creating new branch 'version-bump/VERSION_TAG', also update the reference to the origin
           git checkout -b $VERSION_BRANCH
+          set -x
           echo "before"
           if ! gh api -X GET /repos/:owner/:repo/git/ref/refs/heads/$VERSION_BRANCH >/dev/null 2>&1; then
             echo "creating new branch"
