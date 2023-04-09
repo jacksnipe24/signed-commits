@@ -82,8 +82,8 @@ jobs:
           pr_url=$(echo $response | jq -r '.html_url')
           pr_number=$(echo $response | jq -r '.number')
         
-          echo "PR_NUMBER=$pr_number" >> $GITHUB_OUTPUT
-          echo "PR_URL=$pr_url" >> $GITHUB_OUTPUT
+          echo "pull-request-number=$pr_number" >> $GITHUB_OUTPUT
+          echo "pull-request-url=$pr_url" >> $GITHUB_OUTPUT
           
           # as a last step we create a label for PR
           gh api --method PATCH /repos/:owner/:repo/issues/$pr_number \
