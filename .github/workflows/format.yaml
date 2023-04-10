@@ -105,7 +105,7 @@ jobs:
             echo "pull-request-url=$pr_url" >> $GITHUB_OUTPUT
             
             # as a last step we create a label for PR
-            gh api -X POST "/repos/:owner/:repo/issues/$pr_number/labels" -F "labels=[\"version-bump\"]"
+            gh api -X POST "/repos/:owner/:repo/issues/$pr_number/labels" --data '{"labels":["version-bump"]}'
 
           else
             echo "Pull requests found for branch ${{ steps.create-commit.outputs.VERSION_BRANCH }}, setting outputs"
