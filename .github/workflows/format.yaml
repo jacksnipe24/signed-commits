@@ -42,9 +42,8 @@ jobs:
           FILE_TO_COMMIT: package.json
           VERSION_BRANCH: "version-bump/${{ steps.tick-version.outputs.VERSION_TAG }}"
         run: |
-          # start with creating new branch 'version-bump/VERSION_TAG', also update the reference to the origin
+          # start with creating new branch 'version-bump/VERSION_TAG', also update the reference to the origin if it doesn't exist
           git checkout -b $VERSION_BRANCH
-          echo "before"
           if ! gh api -X GET /repos/:owner/:repo/git/ref/heads/$VERSION_BRANCH >/dev/null 2>&1; then
             echo "creating new branch"
              gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/$VERSION_BRANCH"
@@ -63,22 +62,21 @@ jobs:
           --field branch="$VERSION_BRANCH" \
           --field sha="$SHA" | jq -r '.commit.sha')
           fi
+          # branch exists so we just set the output
           echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
-          echo "after"
       - name: Create PR
         id: create-pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # at this point the new branch with one new commit is created so we open PR 
-          echo "checking ${{ steps.create-commit.outputs.VERSION_BRANCH }}"
-          isPR=$(gh api --method GET /repos/:owner/:repo/pulls --jq "map(select(.head.ref == \"${{ steps.create-commit.outputs.VERSION_BRANCH }}\"))")
-          echo "checked"
-          if [[ -z "$isPR" ]]; then
-          echo "No pull requests found for branch $branch"
+          # at this point  either new branch with one new commit is created so we open PR, or we get the open PR and set the outputs
+          pullRequest=$(gh api --method GET "/repos/:owner/:repo/pulls" --jq ".[] | select(.head.ref == \"${{ steps.create-commit.outputs.VERSION_BRANCH }}\" and .state == \"open\") | {url: .html_url, number: .number}")
+          
+          if [[ -z "$pullRequest" ]]; then
+          echo "No pull requests found for branch ${{ steps.create-commit.outputs.VERSION_BRANCH }}, creating new PR"
           response=$(gh api --method POST /repos/:owner/:repo/pulls \
           --field title="Bump version to ${{ steps.tick-version.outputs.VERSION_TAG }}" \
-          --field body="This PR was created by the [createVersionBumpPR](./.github/actions/tick-version) GitHub action. It will be merged automatically once checks are successful." \
+          --field body="" \
           --field head="${{ steps.create-commit.outputs.VERSION_BRANCH }}" \
           --field base="${{ github.base_ref || 'main' }}")
           
@@ -96,6 +94,34 @@ jobs:
           }
           EOF
           else
-          echo "Pull requests found for branch $branch:"
-          echo "$response"
+          echo "Pull requests found for branch ${{ steps.create-commit.outputs.VERSION_BRANCH }}, setting outputs"
+          pr_url=$(echo "$pullRequest" | jq -r '.url')
+          pr_number=$(echo "$pullRequest" | jq -r '.number')
+          
+          echo "pull-request-number=$pr_number" >> $GITHUB_OUTPUT
+          echo "pull-request-url=$pr_url" >> $GITHUB_OUTPUT
           fi
+  post-result-to-pr:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs:
+      - createPullRequest
+    steps:
+      - name: Post success or failure comment to PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const needs = ${{ toJSON(needs) }}
+            // Note, it's possible to iterate over jobs to show multiple failures, but we instead consolidate since each job depends on the prior.
+            // needs["JOB"] will be undefined for skipped jobs, so spreading will show the latest failure in the chain
+            const { VERSION_TAG, PR_URL } = {
+              ...needs?.createVersionBumpPR?.outputs,
+            }
+            if(context.eventName == 'pull_request'){
+                         github.rest.issues.createComment({
+                           issue_number: context.issue.number,
+                           owner: context.repo.owner,
+                           repo: context.repo.repo,
+                           body: ':rocket: Successfully created version bump PR: ${PR_URL}'
+                         })
+                       }
