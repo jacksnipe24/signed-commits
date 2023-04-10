@@ -8,6 +8,10 @@ on:
 jobs:
   createPullRequest:
     if: github.event.pull_request.merged == true
+    outputs:
+      PR_NUMBER: ${{ steps.create-pr.outputs.pull-request-number }}
+      PR_URL: ${{ steps.create-pr.outputs.pull-request-url }}
+      VERSION_TAG: ${{ steps.tick-version.outputs.VERSION_TAG }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
