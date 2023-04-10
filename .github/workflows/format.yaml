@@ -109,7 +109,7 @@ jobs:
 
           else
             echo "Pull requests found for branch ${{ steps.create-commit.outputs.VERSION_BRANCH }}, setting outputs"
-            pr_url=$(echo "$pullRequest" | jq -r '.html_url')
+            pr_url=$(echo "$pullRequest" | jq -r '.url')
             pr_number=$(echo "$pullRequest" | jq -r '.number')
             
             echo "pull-request-number=$pr_number" >> $GITHUB_OUTPUT
