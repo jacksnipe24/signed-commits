@@ -115,7 +115,7 @@ jobs:
             // Note, it's possible to iterate over jobs to show multiple failures, but we instead consolidate since each job depends on the prior.
             // needs["JOB"] will be undefined for skipped jobs, so spreading will show the latest failure in the chain
             const { VERSION_TAG, PR_URL } = {
-              ...needs?.createVersionBumpPR?.outputs,
+              ...needs?.createPullRequest?.outputs,
             }
             if(context.eventName == 'pull_request'){
                          github.rest.issues.createComment({
