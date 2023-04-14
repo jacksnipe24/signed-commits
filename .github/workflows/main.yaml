@@ -27,11 +27,15 @@ jobs:
             ls -la
       - name: Check for test.only in test.ts files
         run: |
-          find ${{ github.workspace }}/test -name "*.test.ts" | xargs grep -l 'test.only'
-          if [ $? -eq 0 ]; then
-            echo "Error: Found /test.only/ in one of test files"
+          set +e
+          files=$(find ${{ github.workspace }}/test -name "*.test.ts" | xargs grep -l 'test.only')
+          set -e
+          
+          if [[ -n $files ]]; then
+          echo "Error: Found /test.only/ in one of the following test files:"
+            echo "$files"
             exit 1
-          else
+            else
             echo "No instances of /test.only/ found in test files"
-          fi
-
+            fi
+        
