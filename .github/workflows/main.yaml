@@ -29,10 +29,10 @@ jobs:
         run: yarn
 
       - name: Check for test.only in test.ts files
+        uses: actions/checkout@v2
         run: |
-          if grep -r -l 'test.only' ./**/*.ts; then
+          if grep -r -l 'test.only' ${{ github.workspace }}/test/**/*.ts; then
             echo "Error: Found /test.only/ in one of test files";
             exit 1;
           fi
-        working-directory: ${{ github.workspace }}/test
 
