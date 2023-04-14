@@ -27,4 +27,13 @@ jobs:
 
       - name: Install dependencies
         run: yarn
-      - run: yarn lint
+
+      - name: Check for test.only in test.ts files
+        run: |
+          if grep -r -l 'test.only' ./test/**/*.ts; then
+            echo "Error: Found /test.only/ in one of test files"
+            exit 1
+          else
+            echo "No instances of /test.only/ found in test files"
+          fi
+
