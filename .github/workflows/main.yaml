@@ -20,12 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Open Web Client Directory
-        run: |
-            ls -la
-            cd ./test
-            ls -la
-      - name: Check for test.only in test.ts files
         run: |
           set +e
           files=$(find ${{ github.workspace }}/test -name "*.test.ts" | xargs grep -l 'test.only')
