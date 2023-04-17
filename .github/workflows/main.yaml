@@ -21,12 +21,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-            git checkout ${GITHUB_BASE_REF}
+            current_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
+            echo $current_package_version
+            git fetch origin main
+            git checkout main
             git branch
             main_package_version=$(git show main:package.json | grep version | head -n 1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')
             echo $main_package_version
-            current_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
-            echo $current_package_version
+            
             if [ "$main_package_version" != "$current_package_version" ]; then
             echo "Error: Package version on current branch ($current_package_version) does not match the one on main branch ($main_package_version)"
             exit 1
