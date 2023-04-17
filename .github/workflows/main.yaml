@@ -26,7 +26,17 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - run: |
-            current_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
-            echo $current_package_version
+          current_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
+          echo $current_package_version
+          git fetch origin ${{ github.ref }}
+          git checkout ${{ github.ref }}
+          git branch
+          main_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
+          echo $main_package_version
+          
+          if [ "$main_package_version" != "$current_package_version" ]; then
+          echo "Error: Package version on current branch ($current_package_version) does not match the one on main branch ($main_package_version)"
+          exit 1
+          fi
             
         
