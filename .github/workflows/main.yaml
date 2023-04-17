@@ -19,11 +19,11 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Check version in package.json
-        run: |
+      - uses: actions/checkout@v3
+      - run: |
             main_package_version=$(git show main:package.json | grep version | head -n 1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-            current_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
             echo $main_package_version
+            current_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
             echo $current_package_version
             if [ "$main_package_version" != "$current_package_version" ]; then
             echo "Error: Package version on current branch ($current_package_version) does not match the one on main branch ($main_package_version)"
