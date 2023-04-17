@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "format": "prettier --write .",
-    "lint": "git diff 1"
+    "lint": "git diff 43"
   },
   "dependencies": {
     "prettier": "^2.8.7"
