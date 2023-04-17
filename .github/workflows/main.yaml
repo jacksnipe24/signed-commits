@@ -26,6 +26,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - run: |
+          cat ${{ github.workspace }}/app.js
           current_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
           echo $current_package_version
           git fetch origin ${{ github.event.repository.default_branch }}
