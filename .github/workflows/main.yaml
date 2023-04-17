@@ -21,6 +21,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
+            git branch
+            echo ${GITHUB_BASE_REF}
             main_package_version=$(git show main:package.json | grep version | head -n 1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')
             echo $main_package_version
             current_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
