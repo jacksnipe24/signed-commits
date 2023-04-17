@@ -22,7 +22,7 @@ jobs:
       - name: Check version in package.json
         run: |
             main_package_version=$(git show main:package.json | grep version | head -n 1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')
-            current_package_version=$(node -pe "require('./package.json').version")
+            current_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
             echo $main_package_version
             echo $current_package_version
             if [ "$main_package_version" != "$current_package_version" ]; then
