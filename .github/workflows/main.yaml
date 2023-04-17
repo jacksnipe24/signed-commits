@@ -23,8 +23,8 @@ jobs:
       - run: |
             current_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
             echo $current_package_version
-            git fetch origin main
-            git checkout main
+            git fetch origin ${{ github.ref }}
+            git checkout ${{ github.ref }}
             git branch
             main_package_version=$(git show main:package.json | grep version | head -n 1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')
             echo $main_package_version
