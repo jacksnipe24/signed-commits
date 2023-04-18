@@ -10,6 +10,8 @@ export function hanoiTower(num, fromRod, toRod, auxRod) {
 
   hanoiTower(num - 1, fromRod, auxRod, toRod);
 
+
+
   console.log(`Move disk ${num} from rod ${fromRod} to rod ${toRod}`);
   hanoiTower(num - 1, auxRod, toRod, fromRod);
 }
