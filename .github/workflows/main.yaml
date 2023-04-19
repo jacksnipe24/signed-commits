@@ -27,7 +27,7 @@ jobs:
           latest_version=$(gh api repos/smartcontractkit/ea-framework-js/contents/package.json | jq -r '.content' | base64 -d | jq -r '.version')
           packages=$(find packages -name 'package.json')
           
-           for file in $(echo packages); do
+           for file in $(echo $packages); do
             if jq -e ".dependencies[\"$dependency\"]" "$file" >/dev/null; then
               version=$(jq -r ".dependencies[\"$dependency\"]" "$file")
               if [ "$version" != $(echo $latest_version) ]; then
