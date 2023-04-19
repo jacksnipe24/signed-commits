@@ -20,22 +20,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: yarn format
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
       - run: |
-          current_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
-          git fetch origin ${{ github.base_ref }}
-          git checkout ${{ github.base_ref }}
-          main_package_version=$(node -pe "require('${{ github.workspace }}/package.json').version")
-          
-          if [ "$main_package_version" != "$current_package_version" ]; then
-           echo "Error: Package version on current branch ($current_package_version) does not match the one on ${{ github.base_ref }} branch ($main_package_version)"
-          exit 1
-          fi
-      - uses: actions/checkout@v3
-      - run: |
-          git branch
+          outdated_packages=()
+          dependency="@chainlink/external-adapter-framework"
+          url="https://api.github.com/repos/smartcontractkit/ea-framework-js/contents/package.json"
+          latest_version=$(curl -H "Accept: application/vnd.github.v3+json" $url |
+            jq -r '.content' |
+            base64 --decode |
+            jq -r '.version')
             
-        
+           for file in $(echo $(find packages -name 'package.json')); do
+            if jq -e ".dependencies[\"$dependency\"]" "$file" >/dev/null; then
+              version=$(jq -r ".dependencies[\"$dependency\"]" "$file")
+              if [ "$version" != $(echo $latest_version) ]; then
+                outdated_packages+=("$file")
+              fi
+             fi
+            done
+            if [ ${#outdated_packages[@]} -gt 0 ]; then
+              echo "The following packages have an outdated \"$dependency\" dependency:"
+              for file in "${outdated_packages[@]}"; do
+                echo "- $file"
+              done
+            exit 1
+            fi
