@@ -1,9 +1,9 @@
           dependency="@chainlink/external-adapter-framework"
-          latest_version=0.28.6
+          latest_version="0.28.4"
           packages=$(find packages -name 'package.json')
           v3_packages=()
           outdated_packages=()
-          changes=($(git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | xargs -I{} dirname {} | sort -u))
+          changes=($(git diff --name-only HEAD^ HEAD | xargs -I{} dirname {} | sort -u))
           
           # get the list of v3 EAs
           for file in $(echo $packages); do
