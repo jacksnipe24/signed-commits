@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  ea=framework-outdated-version:
+  ea-framework-outdated-version:
     name: Adapter changes accompanied by a changeset
     runs-on: ubuntu-latest
     steps:
