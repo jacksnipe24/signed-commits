@@ -26,8 +26,6 @@ jobs:
           outdated_packages=()
           set +e
           changes=($(git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | xargs -I{} dirname {} | sort -u))
-           echo $changes
-           echo "after"
 
            # get the list of v3 EAs
            for file in $(echo $packages); do
@@ -40,7 +38,6 @@ jobs:
             for changedFile in "${changes[@]}"; do
              for package in "${v3_packages[@]}"; do
                 if [[ "$changedFile" == "$package"* ]]; then
-                  echo $changedFile
                   # found change in v3 adapter, comparing versions
                   local_version=$(jq -r ".dependencies[\"$dependency\"]" "$package/package.json")
                   if [ "$local_version" != $(echo $latest_version) ]; then
