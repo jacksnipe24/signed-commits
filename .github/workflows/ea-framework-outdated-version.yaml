@@ -1,4 +1,4 @@
-name: Adapter changes accompanied by a changeset
+name: Changed adapters have latest EA framework version
 
 on:
   pull_request:
@@ -7,36 +7,40 @@ on:
 
 jobs:
   ea-framework-outdated-version:
-    name: Adapter changes accompanied by a changeset
+    name: Changed adapters have latest EA framework version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 5
-      - name: Check if v3 adapter is changed and has the latest framework version
-        id: adapter_change_has_changeset
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 7
+      - name: Check if changed v3 adapter has the latest EA framework version
+        id: adapter_change_has_latest_ea_framework_version
         run: |
-          # Check for outdated ea-framework dependency
+          # Check for outdated ea-framework dependencies
           dependency="@chainlink/external-adapter-framework"
-            latest_version=0.28.6
-            packages=$(find packages -name 'package.json')
-            v3_packages=()
-            outdated_packages=()
-            changes=($(git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | xargs -I{} dirname {} | sort -u))
+          latest_version=$(gh api repos/smartcontractkit/ea-framework-js/contents/package.json | jq -r '.content' | base64 -d | jq -r '.version')
+          packages=$(find packages -name 'package.json')
+          v3_packages=()
+          outdated_packages=()
+          set +e
+          changes=($(git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | xargs -I{} dirname {} | sort -u))
+           echo $changes
+           echo "after"
 
-            # get the list of v3 EAs
-            for file in $(echo $packages); do
+           # get the list of v3 EAs
+           for file in $(echo $packages); do
               if jq -e ".dependencies[\"$dependency\"]" "$file" >/dev/null; then
                 v3_packages+=("$(dirname $file)")
               fi
-            done
-
-
-            # check if changed code is part of v3 EA
+           done
+          
+           # check if changed code is part of v3 EA
             for changedFile in "${changes[@]}"; do
              for package in "${v3_packages[@]}"; do
                 if [[ "$changedFile" == "$package"* ]]; then
+                  echo $changedFile
                   # found change in v3 adapter, comparing versions
                   local_version=$(jq -r ".dependencies[\"$dependency\"]" "$package/package.json")
                   if [ "$local_version" != $(echo $latest_version) ]; then
@@ -45,7 +49,8 @@ jobs:
                 fi
              done
             done
-
+          
+            set -e
             if [ ${#outdated_packages[@]} -gt 0 ]; then
               echo "The following packages have an outdated \"$dependency\" dependency:"
               for file in "${outdated_packages[@]}"; do
