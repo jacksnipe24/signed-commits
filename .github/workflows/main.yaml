@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         env:
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: |
           outdated_packages=()
           dependency="@chainlink/external-adapter-framework"
