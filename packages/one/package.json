@@ -2,6 +2,6 @@
   "name": "one",
   "version": "1.0.0",
   "dependencies": {
-    "@chainlink/external-adapter-framework": "0.28.4"
+    "@chainlink/external-adapter-framework": "0.28.2"
   }
 }
