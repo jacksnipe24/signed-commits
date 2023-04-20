@@ -19,8 +19,9 @@ jobs:
         uses: tj-actions/changed-files@v32
       - name: List all added files
         run: |
-          for file in ${{ steps.changed-files.outputs.modified_files }}; do
-             echo "$file was modified."
-          done
+
+          changes=${{ steps.changed-files.outputs.modified_file }}
+          echo "changes"
+          echo $changes
          
 
