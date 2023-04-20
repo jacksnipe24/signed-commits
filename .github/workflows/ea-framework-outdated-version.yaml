@@ -17,9 +17,13 @@ jobs:
       - name: Get changed files
         id: file_changes
         uses: tj-actions/changed-files@v35
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: |
           changes=${{ steps.file_changes.outputs.all_changed_files }}
           echo "changes"
           echo $changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
          
 
