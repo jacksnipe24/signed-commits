@@ -15,10 +15,10 @@ jobs:
         with:
           fetch-depth: 0
       - name: Get changed files
-        id: file-changes
+        id: file_changes
         uses: tj-actions/changed-files@v35
       - run: |
-          changes=${{ steps.file-changes.outputs.all_changed_files }}
+          changes=${{ steps.file_changes.outputs.all_changed_files }}
           echo "changes"
           echo $changes
          
