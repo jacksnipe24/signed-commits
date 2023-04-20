@@ -15,7 +15,7 @@ jobs:
       - name: Check if changed v3 adapters have the latest EA framework version
         id: adapter_change_has_latest_ea_framework_version
         uses: jitterbit/get-changed-files@v1
-        run: |
+      - run: |
           # Check for outdated ea-framework dependencies
           dependency="@chainlink/external-adapter-framework"
           v3_packages=()
