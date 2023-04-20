@@ -20,7 +20,6 @@ jobs:
           dependency="@chainlink/external-adapter-framework"
           v3_packages=()
           outdated_packages=()
-          set +e
           packages=$(find packages -name 'package.json')
           latest_version=$(gh api repos/smartcontractkit/ea-framework-js/contents/package.json | jq -r '.content' | base64 -d | jq -r '.version')
           changes=${{ steps.adapter_change_has_latest_ea_framework_version.outputs.all }}
@@ -47,7 +46,6 @@ jobs:
              done
             done
           
-            set -e
             if [ ${#outdated_packages[@]} -gt 0 ]; then
               echo "The following packages have an outdated \"$dependency\" dependency:"
               for file in "${outdated_packages[@]}"; do
