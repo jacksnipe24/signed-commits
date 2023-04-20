@@ -38,7 +38,7 @@ jobs:
                 if [[ "$changedFile" == "$package"* ]]; then
                   # found change in v3 adapter, comparing versions
                   local_version=$(jq -r ".dependencies[\"$dependency\"]" "$package/package.json")
-                  if [ "$local_version" != $(echo $latest_version) ]; then
+                  if [ "$local_version" != $(echo $latest_version) ] && ! grep -q "^$package$" <<< "${outdated_packages[@]}"; then
                     outdated_packages+=("$package")
                   fi
                 fi
