@@ -26,7 +26,9 @@ jobs:
           set +e
           packages=$(find packages -name 'package.json')
           latest_version=$(gh api repos/smartcontractkit/ea-framework-js/contents/package.json | jq -r '.content' | base64 -d | jq -r '.version')
-         
+          for file in ${{ steps.changed-files.outputs.modified_files }}; do
+            echo "$file was modified."
+           done
 
            # get the list of v3 EAs
            for file in $(echo $packages); do
