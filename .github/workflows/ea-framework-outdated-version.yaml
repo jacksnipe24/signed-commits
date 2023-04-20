@@ -20,6 +20,7 @@ jobs:
           dependency="@chainlink/external-adapter-framework"
           v3_packages=()
           outdated_packages=()
+          # If error happens we don't want to fail the pipeline
           set +e
           packages=$(find packages -name 'package.json')
           latest_version=$(gh api repos/smartcontractkit/ea-framework-js/contents/package.json | jq -r '.content' | base64 -d | jq -r '.version')
