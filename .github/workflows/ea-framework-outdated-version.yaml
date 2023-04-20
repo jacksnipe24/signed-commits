@@ -12,10 +12,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Get changed files
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 10
+      - name: Check if changed v3 adapters have the latest EA framework version
         id: adapter_change_has_latest_ea_framework_version
-        uses: tj-actions/changed-files@v35
-      - run: |
+        run: |
           # Check for outdated ea-framework dependencies
           dependency="@chainlink/external-adapter-framework"
           v3_packages=()
@@ -23,9 +25,7 @@ jobs:
           set +e
           packages=$(find packages -name 'package.json')
           latest_version=$(gh api repos/smartcontractkit/ea-framework-js/contents/package.json | jq -r '.content' | base64 -d | jq -r '.version')
-          changes=${{ steps.adapter_change_has_latest_ea_framework_version.outputs.all_changed_files }}
-          echo "changes"
-          echo $changes
+          changes=($(git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | xargs -I{} dirname {} | sort -u))
 
            # get the list of v3 EAs
            for file in $(echo $packages); do
