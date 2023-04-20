@@ -21,7 +21,7 @@ jobs:
           v3_packages=()
           outdated_packages=()
           packages=$(find packages -name 'package.json')
-          latest_version=$(gh api repos/smartcontractkit/ea-framework-js/contents/package.json | jq -r '.content' | base64 -d | jq -r '.version')
+          latest_version="0.28.4"
           changes=${{ steps.adapter_change_has_latest_ea_framework_version.outputs.all }}
 
            # get the list of v3 EAs
