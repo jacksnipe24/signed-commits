@@ -32,6 +32,8 @@ jobs:
               fi
            done
           
+          echo $v3_packages
+          
            # check if changed code is part of any v3 EA
             for changedFile in "${changes[@]}"; do
              for package in "${v3_packages[@]}"; do
