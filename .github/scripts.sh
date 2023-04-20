@@ -6,6 +6,10 @@
           changes=($(git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | xargs -I{} dirname {} | sort -u))
           
           # get the list of v3 EAs
+
+
+
+
           for file in $(echo $packages); do
             if jq -e ".dependencies[\"$dependency\"]" "$file" >/dev/null; then
               v3_packages+=("$(dirname $file)")
