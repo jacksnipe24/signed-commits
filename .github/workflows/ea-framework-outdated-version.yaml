@@ -41,7 +41,7 @@ jobs:
           echo $v3_packages
           
            # check if changed code is part of any v3 EA
-            for changedFile in "${{ steps.changed-files.outputs.modified_files }}"; do
+            for changedFile in ${{ steps.changed-files.outputs.modified_files }}; do
               echo "$changedFile was modified 2."
              for package in "${v3_packages[@]}"; do
                 if [[ "$changedFile" == "$package"* ]]; then
