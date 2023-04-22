@@ -60,6 +60,23 @@ jobs:
             gh api --method POST /repos/:owner/:repo/git/refs \
             --field ref="refs/tags/v${{ steps.tick-version.outputs.VERSION_TAG }}" \
             --field sha="$NEW_TAG_SHA"
+            
+            #update coverage
+            coverage=95
+  
+            readme="README.md"
+            sed -i '' 's/\(!\[Coverage\](https:\/\/img\.shields\.io\/badge\/coverage-[0-9]\{1,3\}%25-green)\)/![Coverage](https:\/\/img\.shields\.io\/badge\/coverage-'$coverage'%25-green)/g' README.md
+          
+            SHA2=$( git rev-parse $VERSION_BRANCH:$readme )
+            CONTENT2=$( base64 -i $readme )
+            gh api --method PUT /repos/:owner/:repo/contents/$readme \
+             --field message="update code coverage badge" \
+             --field content="$CONTENT2" \
+            --field encoding="base64" \
+            --field branch="$VERSION_BRANCH" \
+            --field sha="$SHA2"
+          
+          
           fi
           echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
       - name: Create PR
