@@ -6,8 +6,8 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "git diff 43",
-    "test": "ava",
-    "coverage": "c8 check-coverage"
+    "test": "c8 ava",
+    "code-coverage": "c8 check-coverage --statements 95 --lines 95 --functions 95 --branches 90"
   },
   "dependencies": {
     "c8": "^7.13.0",
