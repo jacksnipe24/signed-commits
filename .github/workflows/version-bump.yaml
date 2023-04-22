@@ -9,6 +9,7 @@ jobs:
   createVersionBumpPR:
     runs-on: ubuntu-latest
     steps:
+      - uses: ./.github/actions/set-git-credentials
       - uses: actions/checkout@v3
       - id: tick-version
         run: |
