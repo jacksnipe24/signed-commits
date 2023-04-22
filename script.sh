@@ -1,3 +1,6 @@
 coverage=95
+readme="README.md"
 
-sed -i '' 's/\(!\[Coverage\](https:\/\/img\.shields\.io\/badge\/coverage-[0-9]\{1,3\}%25-green)\)/![Coverage](https:\/\/img\.shields\.io\/badge\/coverage-'$coverage'%25-green)/g' ./README.md
+awk '{gsub(/!\[Coverage\]\(https:\/\/img\.shields\.io\/badge\/coverage-[0-9]{1,3}%25-green\)/,"![Coverage](https://img.shields.io/badge/coverage-'$coverage'%25-green)")}1' "$readme" > tmp && mv tmp "$readme"
+
+
