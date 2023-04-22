@@ -9,8 +9,8 @@ jobs:
   createVersionBumpPR:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/set-git-credentials
       - uses: actions/checkout@v3
+      - uses: ./.github/actions/set-git-credentials
       - id: tick-version
         run: |
           npm version major
