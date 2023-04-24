@@ -65,14 +65,19 @@ jobs:
           #get the current and new code coverage result and update the readme badge if needed
                     yarn install  
                     yarn test
-                     NEW_COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.statements.pct')
+                     NEW_COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.statements.pct | round')
                      CURRENT_COVERAGE=$(grep -o "coverage-[0-9]\+" README.md | grep -o "[0-9]\+")
+                      echo "new coverage $NEW_COVERAGE"
 
                      if [ "$NEW_COVERAGE" != "$CURRENT_COVERAGE" ]; then
                        FILE_TO_COMMIT="README.md"
                        awk '{gsub(/!\[Coverage\]\(https:\/\/img\.shields\.io\/badge\/coverage-[0-9]{1,3}%25-green\)/,"![Coverage](https://img.shields.io/badge/coverage-'$NEW_COVERAGE'%25-green)")}1' "$FILE_TO_COMMIT" > tmp && mv tmp "$FILE_TO_COMMIT"
+          
+                
+                      echo "readme updated"
 
                        SHA=$( git rev-parse $VERSION_BRANCH:$FILE_TO_COMMIT )
+                      echo "sha received $SHA"
                        CONTENT=$( base64 -i $FILE_TO_COMMIT )
                        gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
                         --field message="update code coverage badge" \
