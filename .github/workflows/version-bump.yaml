@@ -63,6 +63,7 @@ jobs:
           fi
           echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
           #get the current and new code coverage result and update the readme badge if needed
+                    yarn install  
                     yarn test
                      new_coverage=$(jq '.[].s | map(select(. > 0)) | length * 100 / length' coverage/coverage-final.json)
                     echo "new cov $new_coverage"
