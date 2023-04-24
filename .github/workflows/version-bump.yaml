@@ -11,12 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/set-git-credentials
-      - uses: actions/download-artifact@v3
-        with:
-          name: coverage-reports
-          path: |
-            ./**/coverage/tmp/*.json
-            ./**/coverage/coverage-final.json
       - id: tick-version
         run: |
           npm version major
@@ -69,6 +63,7 @@ jobs:
           fi
           echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
           #get the current and new code coverage result and update the readme badge if needed
+                    yarn test
                      new_coverage=$(jq '.[].s | map(select(. > 0)) | length * 100 / length' coverage/coverage-final.json)
                     echo "new cov $new_coverage"
                      current_coverage=$(grep -o "coverage-[0-9]\+" README.md | grep -o "[0-9]\+")
