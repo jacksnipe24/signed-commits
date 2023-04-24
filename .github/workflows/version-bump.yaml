@@ -11,6 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/set-git-credentials
+      - uses: actions/download-artifact@v3
+        with:
+          name: coverage-reports
+          path: |
+            ./**/coverage/tmp/*.json
+            ./**/coverage/coverage-final.json
       - id: tick-version
         run: |
           npm version major
@@ -20,12 +26,6 @@ jobs:
           | awk -F: '{ print $2 }' \
           | sed 's/[", ]//g')  
           echo "VERSION_TAG=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
-      - uses: actions/download-artifact@v3
-        with:
-          name: coverage-reports
-          path: |
-            ./**/coverage/tmp/*.json
-            ./**/coverage/coverage-final.json
       - name: Create commit
         id: create-commit
         env:
