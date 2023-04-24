@@ -23,6 +23,9 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: coverage-reports
+          path: |
+            ./**/coverage/tmp/*.json
+            ./**/coverage/coverage-final.json
       - name: Create commit
         id: create-commit
         env:
