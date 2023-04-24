@@ -85,7 +85,7 @@ jobs:
                        --field encoding="base64" \
                        --field branch="$VERSION_BRANCH" \
                        --field sha="$SHA"  \      
-                       --field force=true
+                       --field force="true"
                      fi
       - name: Create PR
         id: create-pr
