@@ -79,7 +79,7 @@ jobs:
                         --field content="$CONTENT" \
                        --field encoding="base64" \
                        --field branch="$VERSION_BRANCH" \
-                       --field sha="$SHA"      
+                       --field sha="$SHA"  \      
                        --field force=true
                      fi
       - name: Create PR
