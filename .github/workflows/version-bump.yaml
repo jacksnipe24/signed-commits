@@ -74,7 +74,7 @@ jobs:
           
                         
                       SHA=$(gh api --method GET /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
-                        --jq '.sha' \)
+                        --jq '.sha')
                       echo "sha received $SHA"
                        CONTENT=$( base64 -i $FILE_TO_COMMIT )
                        gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
