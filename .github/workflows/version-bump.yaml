@@ -20,6 +20,9 @@ jobs:
           | awk -F: '{ print $2 }' \
           | sed 's/[", ]//g')  
           echo "VERSION_TAG=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+      - uses: actions/download-artifact@v3
+        with:
+          name: coverage-reports
       - name: Create commit
         id: create-commit
         env:
@@ -63,7 +66,8 @@ jobs:
           fi
           echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
           #get the current and new code coverage result and update the readme badge if needed
-                     new_coverage=98
+                     new_coverage=$(jq '.[].s | map(select(. > 0)) | length * 100 / length' coverage/coverage-final.json)
+                    echo "new cov $new_coverage"
                      current_coverage=$(grep -o "coverage-[0-9]\+" README.md | grep -o "[0-9]\+")
 
                      if [ "$new_coverage" != "$current_coverage" ]; then
