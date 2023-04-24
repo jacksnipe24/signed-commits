@@ -62,19 +62,25 @@ jobs:
             --field sha="$NEW_TAG_SHA"
             
             #update coverage
-            coverage=95
-  
-            readme="README.md"
-            awk '{gsub(/!\[Coverage\]\(https:\/\/img\.shields\.io\/badge\/coverage-[0-9]{1,3}%25-green\)/,"![Coverage](https://img.shields.io/badge/coverage-'$coverage'%25-green)")}1' "$readme" > tmp && mv tmp "$readme"
+            new_coverage=98
+            current_coverage=grep -o "coverage-[0-9]\+" README.md | grep -o "[0-9]\+"
+            echo "current $current_coverage"
           
-            SHA2=$( git rev-parse $VERSION_BRANCH:$readme )
-            CONTENT2=$( base64 -i $readme )
-            gh api --method PUT /repos/:owner/:repo/contents/$readme \
-             --field message="update code coverage badge" \
-             --field content="$CONTENT2" \
-            --field encoding="base64" \
-            --field branch="$VERSION_BRANCH" \
-            --field sha="$SHA2"
+            if [ "$new_coverage" != "$current_coverage" ]; then
+              readme="README.md"
+              awk '{gsub(/!\[Coverage\]\(https:\/\/img\.shields\.io\/badge\/coverage-[0-9]{1,3}%25-green\)/,"![Coverage](https://img.shields.io/badge/coverage-'$coverage'%25-green)")}1' "$readme" > tmp && mv tmp "$readme"
+            
+              SHA2=$( git rev-parse $VERSION_BRANCH:$readme )
+              CONTENT2=$( base64 -i $readme )
+              gh api --method PUT /repos/:owner/:repo/contents/$readme \
+               --field message="update code coverage badge" \
+               --field content="$CONTENT2" \
+              --field encoding="base64" \
+              --field branch="$VERSION_BRANCH" \
+              --field sha="$SHA2"       
+            fi
+  
+            
           
           
           fi
