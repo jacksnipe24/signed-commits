@@ -65,8 +65,8 @@ jobs:
           #get the current and new code coverage result and update the readme badge if needed
                     yarn install  
                     yarn test
-                     new_coverage=$(jq '.[].s | map(select(. > 0)) | length * 100 / length' coverage/coverage-final.json)
-                    echo "new cov $new_coverage"
+                     new_coverage=$(cat coverage/coverage-summary.json | jq '.total.statements.pct')
+                     echo "new cov $new_coverage"
                      current_coverage=$(grep -o "coverage-[0-9]\+" README.md | grep -o "[0-9]\+")
 
                      if [ "$new_coverage" != "$current_coverage" ]; then
