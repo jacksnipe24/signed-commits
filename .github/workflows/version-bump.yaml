@@ -74,7 +74,7 @@ jobs:
           
                         
                       SHA=$(gh api --method GET /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
-                        -f "ref=refs/heads/$VERSION_BRANCH"
+                        -f "ref=refs/heads/$VERSION_BRANCH" \
                         --jq '.sha')
                       echo "sha received $SHA"
                        CONTENT=$( base64 -i $FILE_TO_COMMIT )
