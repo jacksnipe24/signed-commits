@@ -66,6 +66,8 @@ jobs:
       - run: yarn install
       - run: yarn test
       - name: Update code coverage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ls -la
           #get the current and new code coverage result and update the readme badge if needed
