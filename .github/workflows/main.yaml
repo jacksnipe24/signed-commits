@@ -36,7 +36,7 @@ jobs:
           git checkout -b $BRANCH
           gh api -X POST /repos/:owner/:repo/git/refs -f ref="refs/heads/main" -f sha="$GITHUB_SHA" -f "ref=refs/heads/$BRANCH"
           
-          git add coverage/coverage-summary.json
+          git add -f coverage/coverage-summary.json
           git commit -m "add coverage"
           git push --force
         env:
