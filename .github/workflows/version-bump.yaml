@@ -62,12 +62,9 @@ jobs:
             --field sha="$NEW_TAG_SHA"  
           fi
           echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
-      - name: Get coverage result
-        uses: actions/cache@v2
-        id: get-coverage
-        with:
-          path: ./**/coverage/coverage-summary.json
-          key: coverage-summary-report
+      - uses: actions/checkout@v3
+      - run: yarn install
+      - run: yarn test
       - name: Update code coverage
         run: |
           ls -la
