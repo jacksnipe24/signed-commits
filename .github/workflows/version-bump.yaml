@@ -67,7 +67,7 @@ jobs:
         id: get-coverage
         with:
           path: ./**/coverage/coverage-summary.json
-          key: ${{ hashFiles('./**/coverage/coverage-summary.json') }}
+          key: coverage-summary-report
       - name: Update code coverage
         run: |
           ls -la
