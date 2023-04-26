@@ -182,9 +182,7 @@ jobs:
                   ref,
                 });
               }
-            }catch(error) {
-              console.error(error)
-            }
+            }catch(error) {}
             
             
             if(!JOB_NAME) {
