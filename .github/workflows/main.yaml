@@ -37,6 +37,6 @@ jobs:
           git checkout -b $BRANCH          
           git add -f coverage/coverage-summary.json
           git commit -m "coverage summary report"
-          git push --set-upstream origin $BRANCH
+          git push --set-upstream origin $BRANCH --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
