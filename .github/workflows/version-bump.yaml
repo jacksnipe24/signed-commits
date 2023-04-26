@@ -168,20 +168,20 @@ jobs:
             // delete the coverage-pr branch 
             const ref = `heads/coverage-pr-${context.payload.pull_request.number}`
             try {
-             const coverageRef = await github.rest.git.getRef({
+            const coverageRef = await github.rest.git.getRef({
                owner: context.repo.owner,
                repo: context.repo.repo,
                ref,
               });
-            });
               if (coverageRef && coverageRef.data && coverageRef.data.ref) {
                 await github.rest.git.deleteRef({
                   owner: owner,
                   repo: repo,
                   ref: `heads/${branch}`,
                 });
-            }
-            } catch (error) {
+                }
+            }catch(error) {
+            
             }
             
             
