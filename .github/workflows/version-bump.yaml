@@ -103,13 +103,6 @@ jobs:
               --field branch="$VERSION_BRANCH" \
               --field sha="$SHA"   
                     fi
-          
-           # delete the coverage branch 
-          if gh api /repos/:owner/:repo/git/refs/heads/$COVERAGE_BRANCH >/dev/null 2>&1; then
-            gh api --method DELETE  /repos/:owner/:repo/git/refs/heads/$COVERAGE_BRANCH
-          fi
-         
-
       - name: Create PR
         id: create-pr
         env:
