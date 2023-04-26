@@ -1,7 +1,7 @@
 // bianance
 
-module.exports.sum = (a, b) => {
+module.exports.sum = (x, b) => {
 
-    return (a+b)
+    return (x+b)
 
 }
