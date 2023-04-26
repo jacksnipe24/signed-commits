@@ -1,8 +1,9 @@
 # Signed commits
 
-![Coverage](https://img.shields.io/badge/coverage-22%25-green)
+
+[![NPM version](https://img.shields.io/npm/v/@chainlink/external-adapter-framework.svg?style=flat)](https://www.npmjs.com/package/@chainlink/external-adapter-framework)
+![Coverage](https://img.shields.io/badge/coverage-99%25-green)
+
 
 
 > **Warning**
-> warning text
-

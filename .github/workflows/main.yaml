@@ -30,6 +30,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: coverage-reports
+      - run: yarn code-coverage
       - run: |
           # save coverage summary in a branch 'coverage-pr-PR_NUMBER' so we can have access to it in a different workflow
           BRANCH="coverage-pr-${{ github.event.pull_request.number }}"
@@ -38,5 +39,4 @@ jobs:
           git commit -m "coverage summary report"
           git push --set-upstream origin $BRANCH
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: yarn code-coverage
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
