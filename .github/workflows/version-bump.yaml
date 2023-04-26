@@ -7,6 +7,7 @@ on:
 
 jobs:
   createVersionBumpPR:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
       PR_NUMBER: ${{ steps.create-pr.outputs.pull-request-number }}
@@ -166,15 +167,16 @@ jobs:
                repo: context.repo.repo,
                ref,
               });
+            console.log(coverageRef)
               if (coverageRef && coverageRef.data && coverageRef.data.ref) {
                 await github.rest.git.deleteRef({
                   owner: owner,
                   repo: repo,
                   ref: `heads/${branch}`,
                 });
-                }
+              }
             }catch(error) {
-            
+              console.log('error', error)
             }
             
             
