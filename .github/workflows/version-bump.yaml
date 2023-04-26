@@ -68,14 +68,25 @@ jobs:
         run: |
           #get the current and new code coverage result and update the readme badge if needed
           VERSION_BRANCH="${{ steps.create-commit.outputs.VERSION_BRANCH }}"
-          NEW_COVERAGE=$(gh api -X GET /repos/:owner/:repo/branches | jq -r '.[] | select(.name | startswith("coverage-pr-")) | .name | ltrimstr("coverage-pr-")')
           CURRENT_COVERAGE=$(grep -o "coverage-[0-9]\+" README.md | grep -o "[0-9]\+")
+          COVERAGE_BRANCH="coverage-pr-${{ github.event.number }}"
+          echo "coverage branch is $COVERAGE_BRANCH"
+          COVERAGE_FILE="coverage/coverage-summary.json"
+         
+          COVERAGE_REPORT=$(gh api --method GET /repos/:owner/:repo/contents/$COVERAGE_FILE \
+              -f "ref=refs/heads/$COVERAGE_BRANCH" \
+              | jq -r '.content' \
+              | base64 -d)
+          
+          
+          NEW_COVERAGE=$(echo "$COVERAGE_REPORT" | jq '.total.statements.pct | round')
+          
           
           echo "new cov $NEW_COVERAGE"
           
           if [ "$NEW_COVERAGE" != "$CURRENT_COVERAGE" ]; then
-            FILE_TO_COMMIT="README.md"
             # update content of README
+           FILE_TO_COMMIT="README.md"
             awk '{gsub(/!\[Coverage\]\(https:\/\/img\.shields\.io\/badge\/coverage-[0-9]{1,3}%25-green\)/,"![Coverage](https://img.shields.io/badge/coverage-'$NEW_COVERAGE'%25-green)")}1' "$FILE_TO_COMMIT" > tmp && mv tmp "$FILE_TO_COMMIT"
             
             # commit changes to origin

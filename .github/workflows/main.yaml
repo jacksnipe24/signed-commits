@@ -35,7 +35,7 @@ jobs:
           BRANCH="coverage-pr-${{ github.event.pull_request.number }}"
           git checkout -b $BRANCH          
           git add -f coverage/coverage-summary.json
-          git commit -m "add coverage"
+          git commit -m "coverage summary report"
           git push --set-upstream origin $BRANCH
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
