@@ -67,22 +67,32 @@ jobs:
             --field sha="$NEW_TAG_SHA"  
           fi
           echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
-      - name: Update code coverage
+      - name: Update code coverage badge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # get the current and new code coverage result and update the readme badge if needed
           VERSION_BRANCH="${{ steps.create-commit.outputs.VERSION_BRANCH }}"
-          CURRENT_COVERAGE=$(grep -o "coverage-[0-9]\+" README.md | grep -o "[0-9]\+")
           COVERAGE_BRANCH="coverage-pr-${{ github.event.number }}"
           COVERAGE_FILE="coverage/coverage-summary.json"
-         
+          
+          # read the content of readme 
+          README_CONTENT=$(gh api --method GET /repos/:owner/:repo/contents/README.md \
+              -f "ref=refs/heads/$VERSION_BRANCH" \
+              | jq -r '.content' \
+              | base64 -d)
+          
+          CURRENT_COVERAGE=$(echo "$README_CONTENT" | grep -o 'coverage-[0-9]*\(\.[0-9]\{1,\}\)\?%' | sed 's/coverage-\(.*\)%/\1/')
+          
+          echo "current coverage $CURRENT_COVERAGE"
+          
           # read the content of coverage-report.json and get the coverage number for statements
           COVERAGE_REPORT=$(gh api --method GET /repos/:owner/:repo/contents/$COVERAGE_FILE \
               -f "ref=refs/heads/$COVERAGE_BRANCH" \
               | jq -r '.content' \
               | base64 -d)
-          NEW_COVERAGE=$(echo "$COVERAGE_REPORT" | jq '.total.statements.pct | round')
+          
+          NEW_COVERAGE=$(echo "$COVERAGE_REPORT" | jq '.total.statements.pct')
           
           echo "new cov $NEW_COVERAGE"
           
