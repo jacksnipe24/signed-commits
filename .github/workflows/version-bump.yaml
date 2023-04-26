@@ -8,6 +8,10 @@ on:
 jobs:
   createVersionBumpPR:
     runs-on: ubuntu-latest
+    outputs:
+      PR_NUMBER: ${{ steps.create-pr.outputs.pull-request-number }}
+      PR_URL: ${{ steps.create-pr.outputs.pull-request-url }}
+      VERSION_TAG: ${{ steps.tick-version.outputs.VERSION_TAG }}
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/set-git-credentials
@@ -87,7 +91,7 @@ jobs:
            # change the README content 
             awk '{gsub(/!\[Coverage\]\(https:\/\/img\.shields\.io\/badge\/coverage-[0-9]{1,3}%25-green\)/,"![Coverage](https://img.shields.io/badge/coverage-'$NEW_COVERAGE'%25-green)")}1' "$FILE_TO_COMMIT" > tmp && mv tmp "$FILE_TO_COMMIT"
             
-            # commit changes to origin
+            # commit changes to repo
             SHA=$(gh api --method GET /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
               -f "ref=refs/heads/$VERSION_BRANCH" \
               --jq '.sha')
@@ -138,3 +142,50 @@ jobs:
             echo "pull-request-number=$pr_number" >> $GITHUB_OUTPUT
             echo "pull-request-url=$pr_url" >> $GITHUB_OUTPUT
           fi
+          
+
+  post-result-to-pr:
+    runs-on: ubuntu-latest
+    if: ${{ always() }} # Always run, even if a previous step fails, since we always want to post a result message/comment
+    needs:
+      - createVersionBumpPR
+    steps:
+      - name: Post success or failure comment to PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // `needs` isn't loaded into `actions/github-script@v6`.context, so we have to read it from the outer context
+            // Using toJSON will dump a string representation of the object verbatim, which effective generates code for the `needs` javascript variable below
+            const needs = ${{ toJSON(needs) }}
+            // Note, it's possible to iterate over jobs to show multiple failures, but we instead consolidate since each job depends on the prior.
+            // needs["JOB"] will be undefined for skipped jobs, so spreading will show the latest failure in the chain
+            const { VERSION_TAG, PR_URL, JOB_NAME } = {
+              ...needs?.createVersionBumpPR?.outputs,
+            }
+            
+            
+            
+            // delete the coverage-pr branch 
+            const ref = `heads/coverage-pr-${context.payload.pull_request.number}`
+            try {
+             const coverageRef = await github.rest.git.getRef({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               ref,
+              });
+            });
+              if (coverageRef && coverageRef.data && coverageRef.data.ref) {
+                await github.rest.git.deleteRef({
+                  owner: owner,
+                  repo: repo,
+                  ref: `heads/${branch}`,
+                });
+            }
+            } catch (error) {
+            }
+            
+            
+            if(!JOB_NAME) {
+              core.notice("No job name found, won't post comment to PR")
+              return
+            }
