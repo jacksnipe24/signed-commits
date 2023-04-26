@@ -25,12 +25,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/set-git-credentials
       - run: yarn install
       - uses: actions/download-artifact@v3
         with:
           name: coverage-reports
       - run: yarn code-coverage
+      - uses: ./.github/actions/set-git-credentials
       - run: |
           # save coverage summary in a branch 'coverage-pr-PR_NUMBER' so we can have access to it in a different workflow
           BRANCH="coverage-pr-${{ github.event.pull_request.number }}"
