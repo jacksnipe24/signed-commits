@@ -1,9 +1,9 @@
 // bianance
 
-module.exports.sum = (a, b) => {
-    if (a === 0) {
+module.exports.sum = (s, b) => {
+    if (s === 0) {
         return false
     }
-    return (a+b)
+    return (s+b)
 
 }
