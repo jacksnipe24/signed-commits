@@ -2,7 +2,7 @@
 
 # Assign the string to a variable
 my_string="
-# Signed commits
+# Signed commitss
 
 ![Coverage](https://img.shields.io/badge/coverage-22.3%25-green)
 
