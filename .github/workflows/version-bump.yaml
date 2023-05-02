@@ -175,12 +175,14 @@ jobs:
                repo: context.repo.repo,
                ref,
               });
+              console.log('coverageRef', coverageRef)
               if (coverageRef && coverageRef.data && coverageRef.data.ref) {
                 await github.rest.git.deleteRef({
                   owner: context.repo.owner,
                   repo:  context.repo.repo,
                   ref,
                 });
+                 console.log('coverageRef deleted')
               }
             }catch(error) {}
             
