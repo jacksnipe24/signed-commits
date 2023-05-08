@@ -15,9 +15,8 @@ runs:
     - id: get-version-instruction
       run: |
         shopt -s nocasematch
-        LABELS=${{ inputs.LABELS }}
+        LABEL=${{ inputs.LABELS }}
 
-        LABEL=${BASH_REMATCH[1]}
         echo "Version bump label found: $LABEL"
         echo "VERSION_INSTRUCTION=$LABEL" >> $GITHUB_OUTPUT
       shell: bash
