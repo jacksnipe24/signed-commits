@@ -55,7 +55,7 @@ jobs:
           fi
           echo "branch created"
           
-          PACKAGE_JSON_CONTENT=$(gh api --method GET /repos/:owner/:repo/contents/package.json \
+          PACKAGE_JSON_CONTENT=$(gh api --method GET /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
               -f "ref=refs/heads/$VERSION_BRANCH" \
               | jq -r '.content' \
               | base64 -d)
@@ -72,7 +72,11 @@ jobs:
           
             # create a commit with content of package.json. This will give us 'verified' commit label from github actions bot
             MESSAGE="${{ steps.tick-version.outputs.VERSION_TAG }}"
-            SHA=$( git rev-parse $VERSION_BRANCH:$FILE_TO_COMMIT )
+          
+          SHA=$(gh api --method GET /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+              -f "ref=refs/heads/$VERSION_BRANCH" \
+              --jq '.sha')
+          
             CONTENT=$( base64 -i $FILE_TO_COMMIT )
             NEW_COMMIT_SHA=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
              --field message="$MESSAGE" \
