@@ -60,22 +60,53 @@ jobs:
               | jq -r '.content' \
               | base64 -d)
 
-          CURRENT_ORIGIN_VERSION=$(echo "$PACKAGE_JSON_CONTENT" | jq -r '.version')
+          BUMP_VERSION=$(echo "$PACKAGE_JSON_CONTENT" | jq -r '.version')
           NEW_VERSION="${{ steps.tick-version.outputs.VERSION_TAG }}"
           
-          echo "CURRENT_ORIGIN_VERSION $CURRENT_ORIGIN_VERSION"
+          echo "BUMP_VERSION $BUMP_VERSION"
           echo "NEW_VERSION $NEW_VERSION"
           
-          if [ "$(echo "$NEW_VERSION" | tr -d '.')" -gt "$(echo "$CURRENT_ORIGIN_VERSION" | tr -d '.')" ]; then
+          # Split versions into major, minor, and patch components
+          IFS='.' read -r -a bump <<< "$BUMP_VERSION"
+          IFS='.' read -r -a new <<< "$NEW_VERSION"
+          
+          HIGHEST_VERSION="equal"
+          
+          # Compare major version number
+          if (( bump[0] > new[0] )); then
+            HIGHEST_VERSION="bump"
+          elif (( bump[0] < new[0] )); then
+            HIGHEST_VERSION="new"
+          else
+            # Compare minor version number
+            if (( bump[1] > new[1] )); then
+              HIGHEST_VERSION="bump"
+            elif (( bump[1] < new[1] )); then
+              HIGHEST_VERSION="new"
+            else
+              # Compare patch version number
+              if (( bump[2] > new[2] )); then
+                HIGHEST_VERSION="bump"
+              elif (( bump[2] < new[2] )); then
+                HIGHEST_VERSION="new"
+              fi
+            fi
+          fi
+          
+          if [[ "$HIGHEST_VERSION" == "new" ]]; then
+           #new version is greater than current bump version, creating new commit 
+          
            # move the branch pointer one commit backwards so that we can manually commit changes done by 'npm version ...' command
             git reset HEAD~
           
             # create a commit with content of package.json. This will give us 'verified' commit label from github actions bot
             MESSAGE="${{ steps.tick-version.outputs.VERSION_TAG }}"
           
-          SHA=$(gh api --method GET /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
-              -f "ref=refs/heads/$VERSION_BRANCH" \
-              --jq '.sha')
+            echo "UPDATED_VERSION_TAG=$NEW_VERSION" >> $GITHUB_OUTPUT
+          
+            SHA=$(gh api --method GET /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+                -f "ref=refs/heads/$VERSION_BRANCH" \
+                --jq '.sha')
           
             CONTENT=$( base64 -i $FILE_TO_COMMIT )
             NEW_COMMIT_SHA=$(gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
@@ -99,11 +130,11 @@ jobs:
             --field ref="refs/tags/v${{ steps.tick-version.outputs.VERSION_TAG }}" \
             --field sha="$NEW_TAG_SHA"  
           fi
-          echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
       - name: Create PR
         id: create-pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION_BRANCH: "version-bump"
         run: |
           # at this point either new branch with one new commit is created so we open PR, or we get the open PR and set the outputs
           pullRequest=$(gh api --method GET "/repos/:owner/:repo/pulls" --jq ".[] | select(.head.ref == \"${{ steps.create-commit.outputs.VERSION_BRANCH }}\" and .state == \"open\") | {url: .html_url, number: .number}")
@@ -126,8 +157,15 @@ jobs:
             gh api --method POST "/repos/:owner/:repo/issues/$pr_number/labels" -F "labels[]=version-bump"
           else
             echo "Pull requests found for branch ${{ steps.create-commit.outputs.VERSION_BRANCH }}, setting outputs"
+           
             pr_url=$(echo "$pullRequest" | jq -r '.url')
             pr_number=$(echo "$pullRequest" | jq -r '.number')
+          
+           if [ "${{ steps.create-commit.outputs.UPDATED_VERSION_TAG }}" != "" ]; then
+            gh api --method PATCH /repos/:owner/:repo/pulls/$pr_number \
+            --field title="Bump version to ${{ steps.create-commit.outputs.UPDATED_VERSION_TAG }}" \
+            --field body="This PR bumps the version to ${{ steps.create-commit.outputs.UPDATED_VERSION_TAG }}"
+          fi
           
             echo "pull-request-number=$pr_number" >> $GITHUB_OUTPUT
             echo "pull-request-url=$pr_url" >> $GITHUB_OUTPUT
