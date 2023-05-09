@@ -67,7 +67,7 @@ jobs:
           echo "NEW_VERSION $NEW_VERSION"
           
           #We need to compare and update the package version in version bump PR only if the new version is higher then current bump version. 
-          #For example if PR labeled as 'minor' is merged, then only 'major' labeled PR will overwrite the version change, not the 'patch' labeled PRs. 
+          #For example if PR labeled as 'minor' is merged, then only 'major' labeled PR will overwrite the version change, not the 'patch' or 'minor' labeled PRs. 
           
           # Split versions into major, minor, and patch components
           IFS='.' read -r -a bump <<< "$BUMP_VERSION"
@@ -167,10 +167,11 @@ jobs:
             
            if [ "${{ steps.create-commit.outputs.UPDATED_VERSION_TAG }}" != "" ]; then
             echo "Found new version tag ${{ steps.create-commit.outputs.UPDATED_VERSION_TAG }} for PR, updating title and description"
+          
             gh api --method PATCH /repos/:owner/:repo/pulls/$pr_number \
             --field title="Bump version to ${{ steps.create-commit.outputs.UPDATED_VERSION_TAG }}" \
             --field body="This PR bumps the version to ${{ steps.create-commit.outputs.UPDATED_VERSION_TAG }}"
-            fi
+           fi
           
             echo "pull-request-number=$pr_number" >> $GITHUB_OUTPUT
             echo "pull-request-url=$pr_url" >> $GITHUB_OUTPUT
