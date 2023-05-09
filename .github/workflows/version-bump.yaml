@@ -130,6 +130,7 @@ jobs:
             --field ref="refs/tags/v${{ steps.tick-version.outputs.VERSION_TAG }}" \
             --field sha="$NEW_TAG_SHA"  
           fi
+          echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
       - name: Create PR
         id: create-pr
         env:
