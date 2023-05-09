@@ -12,6 +12,7 @@ IFS='.' read -r -a new <<< "$versionNew"
 HIGHEST_VERSION="equal"
 
 # Compare major version number
+
 if (( bump[0] > new[0] )); then
   HIGHEST_VERSION="bump"
 elif (( bump[0] < new[0] )); then
