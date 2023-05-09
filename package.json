@@ -1,6 +1,6 @@
 {
   "name": "signed-actions",
-  "version": "25.0.1",
+  "version": "25.1.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
