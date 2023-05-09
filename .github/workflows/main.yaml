@@ -13,3 +13,33 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: yarn install
+      - run: yarn test
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-reports
+          path: |
+            ./**/coverage/tmp/*.json
+            ./**/coverage/coverage-summary.json
+  # Only run if tests have run and completed successfully
+  code-coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: yarn install
+      - uses: actions/download-artifact@v3
+        with:
+          name: coverage-reports
+      - run: yarn code-coverage
+      - uses: ./.github/actions/set-git-credentials
+      - name: Save coverage summary
+        if: github.event.pull_request.number # check if the context is pull request
+        run: |
+          # save coverage summary in a branch 'coverage-pr-PR_NUMBER' so we can have access to it in a different workflow
+          BRANCH="coverage-pr-${{ github.event.pull_request.number }}"
+          git checkout -b $BRANCH          
+          git add -f coverage/coverage-summary.json
+          git commit -m "coverage summary report"
+          git push --set-upstream origin $BRANCH --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
