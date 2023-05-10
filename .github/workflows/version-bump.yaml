@@ -264,7 +264,14 @@ jobs:
             }catch(error) {}
             
             
-            if(!JOB_NAME) {
-              core.notice("No job name found, won't post comment to PR")
-              return
-            }
+            
+            
+            if(context.eventName == 'pull_request'){
+              core.notice("This is a pr, posting comment")
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner, // Required for Rest API route, not used for comment
+                repo: context.repo.repo,
+                body: `:rocket: Successfully created version bump PR: ${PR_URL}`
+              })
+            } 
