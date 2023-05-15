@@ -11,6 +11,7 @@ IFS='.' read -r -a new <<< "$versionNew"
 # Initialize flag to indicate HIGHEST_VERSION of version comparison
 HIGHEST_VERSION="equal"
 
+
 # Compare major version number
 if (( bump[0] > new[0] )); then
   HIGHEST_VERSION="bump"
