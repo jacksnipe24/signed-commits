@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Versions to compare
-versionOrigin="0.1.11"
-versionNew="0.2.0"
+versionOrigin="1.1.5"
+versionNew="1.0.9"
 
 # Split versions into major, minor, and patch components
 IFS='.' read -r -a bump <<< "$versionOrigin"
@@ -33,7 +33,8 @@ else
   fi
 fi
 
+
 # Output the HIGHEST_VERSION
-if [[ "$HIGHEST_VERSION" == "new" ]]; then
+if [[ ${bump[0]} < ${new[0]} || ${bump[1]} < ${new[1]} || ${bump[2]} < ${new[2]} ]]; then
   echo "create commit"
 fi

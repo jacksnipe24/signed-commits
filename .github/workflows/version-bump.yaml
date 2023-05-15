@@ -32,6 +32,10 @@ jobs:
       - id: tick-version
         run: |
           VERSION_INSTRUCTION=${{ needs.preflight.outputs.VERSION_INSTRUCTION }}
+          if [[ $VERSION_INSTRUCTION == "none" ]]; then
+            echo "No version bump required"
+            exit 0    
+          fi
           echo "version instruction $VERSION_INSTRUCTION"
           npm version $VERSION_INSTRUCTION
           PACKAGE_VERSION=$(cat package.json \
@@ -42,6 +46,7 @@ jobs:
           echo "VERSION_TAG=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
       - name: Create commit
         id: create-commit
+        if: ${{ steps.tick-version.outputs.VERSION_TAG }} != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: package.json
@@ -134,6 +139,7 @@ jobs:
           fi
           echo "VERSION_BRANCH=$VERSION_BRANCH" >> $GITHUB_OUTPUT
       - name: Update code coverage badge
+        if: ${{ steps.tick-version.outputs.VERSION_TAG }} != ''
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -183,6 +189,7 @@ jobs:
                   --field sha="$SHA"   
             fi
       - name: Create PR
+        if: ${{ steps.tick-version.outputs.VERSION_TAG }} != ''
         id: create-pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
